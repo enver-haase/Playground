@@ -20,6 +20,7 @@
     "polymer": "Polymer/polymer#^1.2.0",
     "webcomponentsjs": "~0.7.21",
     "iron-elements": "PolymerElements/iron-elements#~1.0.9",
-    "paper-elements": "PolymerElements/paper-elements#~1.0.7"
+    "paper-elements": "PolymerElements/paper-elements#~1.0.7",
+    "vaadin-core-elements": "~0.3.0"
   }
 }

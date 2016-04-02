@@ -1,12 +1,44 @@
 
 
+
+This is how things relate:
+
+
+Web Components Primitives - bottom layer, where necessary provided using polyfills (= shims).
+Polymer library - provides a declarative syntax (easier to define custom elements). Two-way
+                  data binding, property observation and such. Can be regarded as an Angular
+                  competitor.
+Custom Elements - top layer, either these are programmed using or not using the Polymer lib.
+                  Mix and match of elements using or not using polymer is perfectly possible.
+(from: https://www.polymer-project.org/1.0/docs/start/what-is-polymer.html)
+
+
+The Polymer Catalog lists a number of Element Groups:
+* Iron Elements (These are core elements)
+* Paper Elements ("Material design")
+* Google Web Components (For Google APIs and services)
+* Gold Elements (eCommerce)
+* Neon Elements (Animation, Special FX)
+* Platinum Elements (Offline, Push, ...)
+* Molecules (Wrappers for third-party libs)
+* Carbon Elements (App-Level)
+
+And then there is
+* Vaadin Elements (Enterprise Elements, based on Polymer)
+
+
+
 In project directory:
  # Polyfill for not-yet-"Web Components"-compliant browsers
  bower install --save webcomponentsjs
+
  # Collection of Web Components called Paper Elements by Google
  bower install --save PolymerElements/paper-elements
  # Likewise, Iron Elements
  bower install --save PolymerElements/iron-elements
+
+ #Vaadin Elements
+ bower install --save vaadin-core-elements
 
 Note: --save means adding them to the bower.json project dependencies.
 
