@@ -1,0 +1,14 @@
+
+
+In project directory:
+ # Polyfill for not-yet-"Web Components"-compliant browsers
+ bower install --save webcomponentsjs
+ # Collection of Web Components called Paper Elements by Google
+ bower install --save PolymerElements/paper-elements
+ # Likewise, Iron Elements
+ bower install --save PolymerElements/iron-elements
+
+Note: --save means adding them to the bower.json project dependencies.
+
+From time to time, in project directory:
+ bower update
