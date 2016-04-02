@@ -1,0 +1,22 @@
+<script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+<link rel="import" href="bower_components/paper-button/paper-button.html">
+
+<dom-module id="x-kickbutton">
+    <template>
+        <paper-button raised on-click="handleClick">Kick Me</paper-button>
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'x-kickbutton',
+
+            handleClick: function(e, detail) {
+                this.fire('kick', {kicked: true});
+            }
+
+        });
+
+    </script>
+
+</dom-module>

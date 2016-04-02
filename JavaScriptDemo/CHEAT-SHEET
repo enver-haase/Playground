@@ -45,6 +45,6 @@ Note: --save means adding them to the bower.json project dependencies.
 From time to time, in project directory:
  bower update
 
-Note- as dependencies are already listed in the bower.json is is sufficient
+Note: As dependencies are already listed in the bower.json is is sufficient
 to download the project from GitHub then issue:
  bower update

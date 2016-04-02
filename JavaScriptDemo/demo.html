@@ -5,25 +5,53 @@
 
     <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
 
-    <link rel="import" href="bower_components/vaadin-core-elements/vaadin-core-elements.html">
-    <link rel="import" href="bower_components/paper-button/paper-button.html">
+    <!-- <link rel="import" href="bower_components/vaadin-core-elements/vaadin-core-elements.html"> -->
 
-    <script src="mycode.js"></script>
+    <!--    <link rel="import" href="x-kickbutton.html"> -->
+
+    <!--    <link rel="import" href="picture-frame.html"> -->
+
+    <link rel="import" href="x-atari.html">
+
+    <!--    <script src="mycode.js"></script> -->
 
     <title>Enver's First Attempts (tm)</title>
-
-
 </head>
+
 <body>
 
-
+<!--
     <p id="enver">Karl Konfy was here.</p>
     <script type="text/javascript">
         //alert("23+11="+calc(23,11));
         showEnver();
     </script>
 
+    <picture-frame>
+        <img src="images/AirportRun_2010.JPG">
+    </picture-frame>
+    <br>
+-->
 
-    <paper-button raised>Raised button</paper-button>
+<!--
+    <x-kickbutton>Raised button</x-kickbutton>
+    <script>
+        document.querySelector('x-kickbutton').addEventListener('kick', function (e) {
+            alert("Kicked: "+e.detail.kicked);
+            console.log(e.detail.kicked); // true
+        })
+    </script>
+-->
+
+<x-atari></x-atari>
+<script>
+    document.querySelector('x-atari').addEventListener('gameover', function (e) {
+        var msg = "Game over, game was "+(e.detail.gamewon?"won.":"lost.");
+        alert(msg);
+        console.log(msg);
+    })
+</script>
+
+
 </body>
 </html>
