@@ -1,18 +1,50 @@
 
+    <!--suppress JSUnresolvedVariable -->
     <link rel="import"
           href="bower_components/polymer/polymer.html">
 
     <dom-module id="x-atari">
 
         <template>
-            <iframe src="http://www/atari/atari.html" frameborder="0" width="100%" height="800px"></iframe>
+            <iframe id="myframe" src="test.html" frameborder="0" width="100%" height="800px"></iframe>
         </template>
 
         <script>
+
             Polymer({
-                is: "x-atari"
+                is: "x-atari",
+
+                properties: {
+                    gamewonHandler: Object
+                },
+
+                attached: function() {
+// This code is for when you directly import the HTML snippet (BODY & STYLE only!) rather than using IFRAME.
+//                    this.gamewonHandler = document.addEventListener(
+//                        'gamewon', this._handleWon.bind(this));
+
+                    var _this = this;
+                    this.$.myframe.onload = function() {
+                        _this.$.myframe.contentDocument.addEventListener(
+                            'gamewon', _this._handleWon.bind(this));
+                    };
+                },
+
+                detached: function() {
+                    if (this.gamewonHandler) {
+// This code is for when you directly import the HTML snippet (BODY & STYLE only!) rather than using IFRAME.
+//                        document.removeEventListener('gamewon', this.gamewonHandler);
+                        _this.$.myframe.contentDocument.removeEventListener(
+                            'gamewon', this.gamewonHandler);
+                    }
+                },
+
+                _handleWon: function(event) {
+                    //console.log('handled won');
+                    //alert('handled won');
+                    this.fire('gameover', {won: true});
+                }
             });
         </script>
 
     </dom-module>
-
