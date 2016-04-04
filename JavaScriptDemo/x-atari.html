@@ -15,34 +15,33 @@
                 is: "x-atari",
 
                 properties: {
-                    gamewonHandler: Object
+                    emDoneHandler: Object
                 },
 
                 attached: function() {
 // This code is for when you directly import the HTML snippet (BODY & STYLE only!) rather than using IFRAME.
-//                    this.gamewonHandler = document.addEventListener(
-//                        'gamewon', this._handleWon.bind(this));
+//                    this.emDoneHandler = document.addEventListener(
+//                        'emscripten_done', this._handleEmDone.bind(this));
 
                     var _this = this;
                     this.$.myframe.onload = function() {
                         _this.$.myframe.contentDocument.addEventListener(
-                            'gamewon', _this._handleWon.bind(this));
+                            'emscripten_done', _this._handleEmDone.bind(_this));
                     };
                 },
 
                 detached: function() {
-                    if (this.gamewonHandler) {
+                    if (this.emDoneHandler) {
 // This code is for when you directly import the HTML snippet (BODY & STYLE only!) rather than using IFRAME.
-//                        document.removeEventListener('gamewon', this.gamewonHandler);
+//                        document.removeEventListener('emscripten_done', this.emDoneHandler);
                         _this.$.myframe.contentDocument.removeEventListener(
-                            'gamewon', this.gamewonHandler);
+                            'emscripten_done', this.emDoneHandler);
                     }
                 },
 
-                _handleWon: function(event) {
-                    //console.log('handled won');
-                    //alert('handled won');
-                    this.fire('gameover', {won: true});
+                _handleEmDone: function(event) {
+                    //alert("foo"+event.returnCode);
+                    this.fire('gameover', {won: event.returnCode});
                 }
             });
         </script>
