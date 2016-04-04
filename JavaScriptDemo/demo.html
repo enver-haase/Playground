@@ -48,7 +48,7 @@
     document.querySelector('x-atari').addEventListener('gameover', function (e) {
         var msg = "Game over, game was "+(e.detail.won?"won.":"lost.");
         alert(msg);
-        console.log(msg);
+        window.setTimeout(function() {window.location.href = "http://www.vaadin.com";}, 3000)
     })
 </script>
 
