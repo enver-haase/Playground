@@ -9,6 +9,9 @@ public class NumericTextField extends com.vaadin.ui.TextField {
 
 	@Override
 	public void setValue(String value){
-		Integer.parseInt(value); // throws NumberFormatException if value is not numerical. //TODO: do we want to exclude negative numbers?
+		if (value.length() != 0){
+			Integer.parseInt(value); // throws NumberFormatException if value is not numerical. //TODO: do we want to exclude negative numbers?value = "0";
+		}
+		super.setValue(value);
 	}
 }
