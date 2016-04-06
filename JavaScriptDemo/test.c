@@ -18,13 +18,13 @@ int main(int argc, char* argv[])
 
     EM_ASM(" \
     try {\
-    var event = new CustomEvent('gamewon', { 'detail': 'The game was WON!' });\
+    var event = new CustomEvent('emscripten_done', { 'returnCode':  'false' });\
 \
     document.dispatchEvent(event); \
     } catch (ex) { \
       alert(ex); \
     } \
-    alert('Event dispatched.'); ");
+    /*alert('Event dispatched.'); */ ");
     
 #endif
 

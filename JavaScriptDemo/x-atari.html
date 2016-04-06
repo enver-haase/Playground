@@ -1,18 +1,50 @@
 
+    <!--suppress JSUnresolvedVariable -->
     <link rel="import"
           href="bower_components/polymer/polymer.html">
 
     <dom-module id="x-atari">
 
         <template>
-            <iframe src="http://www/atari/atari.html" frameborder="0" width="100%" height="800px"></iframe>
+            <!--<iframe id="myframe" src="test.html" frameborder="0" width="100%" height="800px"></iframe>-->
+            <iframe id="myframe" src="atari.html" frameborder="0" width="100%" height="800px"></iframe>
         </template>
 
         <script>
+
             Polymer({
-                is: "x-atari"
+                is: "x-atari",
+
+                properties: {
+                    emDoneHandler: Object
+                },
+
+                attached: function() {
+// This code is for when you directly import the HTML snippet (BODY & STYLE only!) rather than using IFRAME.
+//                    this.emDoneHandler = document.addEventListener(
+//                        'emscripten_done', this._handleEmDone.bind(this));
+
+                    var _this = this;
+                    this.$.myframe.onload = function() {
+                        _this.$.myframe.contentDocument.addEventListener(
+                            'emscripten_done', _this._handleEmDone.bind(_this));
+                    };
+                },
+
+                detached: function() {
+                    if (this.emDoneHandler) {
+// This code is for when you directly import the HTML snippet (BODY & STYLE only!) rather than using IFRAME.
+//                        document.removeEventListener('emscripten_done', this.emDoneHandler);
+                        _this.$.myframe.contentDocument.removeEventListener(
+                            'emscripten_done', this.emDoneHandler);
+                    }
+                },
+
+                _handleEmDone: function(event) {
+                    //alert("foo"+event.returnCode);
+                    this.fire('gameover', {won: event.returnCode});
+                }
             });
         </script>
 
     </dom-module>
-
