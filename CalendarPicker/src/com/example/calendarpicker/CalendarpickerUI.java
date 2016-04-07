@@ -1,13 +1,14 @@
 package com.example.calendarpicker;
 
+import java.util.Date;
+
 import javax.servlet.annotation.WebServlet;
 
+import com.example.calendarpicker.CalendarPicker.CalendarPickerListener;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -21,19 +22,25 @@ public class CalendarpickerUI extends UI {
 	public static class Servlet extends VaadinServlet {
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void init(VaadinRequest request) {
 		final VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
 		setContent(layout);
 
-		Button button = new Button("Click Me");
-		button.addClickListener(new Button.ClickListener() {
-			public void buttonClick(ClickEvent event) {
-				layout.addComponent(new Label("Thank you for clicking"));
+		CalendarPicker cp = new CalendarPicker();
+		cp.setDate(new Date(83, 7, 26));
+		cp.addDateChangeListener(new CalendarPickerListener() {
+			
+			@Override
+			public void onDateChanged() {
+				layout.addComponent(new Label("Now the date is: '"+cp.getDate().toString()+"'."));
 			}
 		});
-		layout.addComponent(button);
+		layout.addComponent(cp);
+
+		layout.addComponent(new Label("Now the date is: '"+cp.getDate().toString()+"'."));
 	}
 
 }
