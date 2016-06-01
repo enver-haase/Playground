@@ -1,10 +1,10 @@
 {
-  "name": "JavaScriptDemo",
+  "name": "JavaScriptSnippets",
   "authors": [
     "Enver Haase <enver.haase@infraleap.com>"
   ],
-  "description": "Polymer Playground",
-  "main": "web/demo.html",
+  "description": "JavaScript Playground",
+  "main": "snippets.html",
   "moduleType": [],
   "license": "?",
   "homepage": "http://www.infraleap.com",
