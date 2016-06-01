@@ -4,7 +4,7 @@
     "Enver Haase <enver.haase@infraleap.com>"
   ],
   "description": "Polymer Playground",
-  "main": "web/demo.html",
+  "main": "demo.html",
   "moduleType": [],
   "license": "?",
   "homepage": "http://www.infraleap.com",

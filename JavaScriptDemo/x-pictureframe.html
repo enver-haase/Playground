@@ -1,16 +1,22 @@
 <link rel="import"
-      href="bower_components/polymer/polymer.html">
+      href="bower_components/polymer/polymer.html" xmlns="">
 
-<dom-module id="picture-frame">
-
+<dom-module id="x-pictureframe">
     <template>
         <!-- scoped CSS for this element -->
         <style>
             div {
                 display: inline-block;
-                background-color: #00f;
+                background-color: #090;
                 border-radius: 10px;
-                padding: 4px;
+                padding: 20px;
+                animation: blink-animation 300ms steps(20, start) infinite alternate;
+            }
+
+            @keyframes blink-animation {
+                to {
+                    background-color: #fff;
+                }
             }
         </style>
         <div>
@@ -21,7 +27,7 @@
 
     <script>
         Polymer({
-            is: "picture-frame"
+            is: "x-pictureframe"
         });
     </script>
 

@@ -9,39 +9,40 @@
 
     <link rel="import" href="x-kickbutton.html">
 
-    <!--    <link rel="import" href="picture-frame.html"> -->
+    <link rel="import" href="x-pictureframe.html">
 
     <link rel="import" href="x-atari.html">
 
-    <!--    <script src="mycode.js"></script> -->
-
-    <title>Enver's First Attempts (tm)</title>
+    <title>Enver's Emscripten (tm)</title>
 </head>
 
 <body>
 
-<!--
-    <p id="enver">Karl Konfy was here.</p>
-    <script type="text/javascript">
-        //alert("23+11="+calc(23,11));
-        showEnver();
-    </script>
+<style>
+    .bottom-three {
+        margin-bottom: 3cm;
+    }
+</style>
 
-    <picture-frame>
-        <img src="images/AirportRun_2010.JPG">
-    </picture-frame>
-    <br>
--->
 
+<x-pictureframe>
+    <img src="images/AirportRun_2010.JPG">
+</x-pictureframe>
+<br>
+
+<p class="bottom-three">
+</p>
 
 <x-kickbutton>Raised button</x-kickbutton>
 <script>
     document.querySelector('x-kickbutton').addEventListener('kick', function (e) {
         alert("Kicked: " + e.detail.kicked);
-        //console.log(e.detail.kicked); // true
+        console.log("Kicked: " + e.detail.kicked); // true
     })
 </script>
 
+<p class="bottom-three">
+</p>
 
 <x-atari></x-atari>
 <script>

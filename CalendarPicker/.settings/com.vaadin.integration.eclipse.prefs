@@ -1,7 +1,8 @@
+com.vaadin.integration.eclipse.mavenLatestVersionsUpgrade=["7.6.6"]
 com.vaadin.integration.eclipse.previousCompileAction=both
 com.vaadin.integration.eclipse.useLatestNightly=false
 com.vaadin.integration.eclipse.widgetsetBuildsSuspended=true
-com.vaadin.integration.eclipse.widgetsetCompilationEta=109129
+com.vaadin.integration.eclipse.widgetsetCompilationEta=39293
 com.vaadin.integration.eclipse.widgetsetDirty=false
 com.vaadin.integration.eclipse.widgetsetParallelism=2
 com.vaadin.integration.eclipse.widgetsetStyle=DETAILED
