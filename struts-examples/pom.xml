@@ -45,40 +45,9 @@
     </properties>
 
     <modules>
-        <module>annotations</module>
         <module>basic-struts</module>
-        <module>bean-validation</module>
-        <module>blank</module>
-        <module>coding-actions</module>
-        <module>control-tags</module>
-        <module>debugging-struts</module>
-        <module>exception-handling</module>
-        <module>exclude-parameters</module>
-        <module>form-processing</module>
-        <module>form-tags</module>
-        <module>form-validation</module>
-        <module>form-xml-validation</module>
-        <module>helloworld</module>
-        <module>http-session</module>
-        <module>interceptors</module>
-        <module>jboss-blank</module>
-        <module>mailreader</module>
-        <module>message-resource</module>
-        <module>preparable-interface</module>
-        <module>restful2actionmapper</module>
-        <module>rest-angular</module>
-        <module>spring-struts</module>
-        <module>tiles</module>
-        <module>themes</module>
-        <module>themes-override</module>
-        <module>using-tags</module>
-        <module>unit-testing</module>
-        <module>wildcard-method-selection</module>
-        <module>message-store</module>
-        <module>type-conversion</module>
-        <module>wildcard-regex</module>
-        <module>unknown-handler</module>
-  </modules>
+        <module>basic-struts-with-vaadin</module>
+    </modules>
 
     <dependencies>
 
