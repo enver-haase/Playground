@@ -8,8 +8,8 @@
         <artifactId>struts-examples</artifactId>
         <version>1.0.0</version>
     </parent>
-    <artifactId>basic-struts</artifactId>
-    <name>Basic Struts2 Example</name>
+    <artifactId>basic-struts-with-vaadin</artifactId>
+    <name>Basic Struts2 Example With Vaadin View</name>
     <description>Basic Struts 2 example application</description>
 
     <packaging>war</packaging>
