@@ -1,20 +1,21 @@
-This is the example project referred to in the
+
+This is derived from the example project referred to in the
 Struts 2 documentation, Ready, Set, Go tutorial.
 See:  http://struts.apache.org.
 
-To build the application's war file run mvn clean package
-from the project's root folder.
+This is augmented with a simple Vaadin app.
 
-The war file is created in the target sub-folder.
+Run command:
+ mvn jetty:run
 
-Copy the war file to your Servlet container (e.g. Tomcat) and 
-then startup the Servlet container.
-
-Or if you are using maven you can run command:
-mvn jetty:run
+Then point your browser to
+ http://localhost:8080/index
 
 
-In a web browser go to:  http://localhost:8080/basic-struts/index.action.
+You should see a page that either says it's "failing" (no worries, it's
+based on a random generator that gives you this message 50% of the time)
+or it's "successful" in which case you should see a simple Vaadin application
+running on the same page.
 
-You should see a web page with Welcome to Struts 2!
 
+Enver Haase 2016-07-12

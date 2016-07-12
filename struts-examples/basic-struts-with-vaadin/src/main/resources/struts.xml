@@ -6,23 +6,16 @@
 <struts>
 
 	<constant name="struts.devMode" value="true" />
+	<constant name="struts.action.excludePattern" value="/VAADIN*,/vaadinapp*"/>
 
-	<package name="basic-struts2" extends="struts-default">
-		<action name="index">
-			<result>/index.jsp</result>
-		</action>
+	<package name="basic-struts2-with-vaadin" extends="struts-default">
 
-		<action name="" class="com.infraleap.strutsapp.IndexAction" method="execute">
-			<result name="success">/success.jsp</result>
-			<result name="fail">/fail.jsp</result>
-		</action>
-
-
-		<action name="hello" class="com.infraleap.strutsapp.IndexAction" method="execute">
+		<action name="index" class="com.infraleap.strutsapp.IndexAction" method="execute">
 			<result name="success">/success.jsp</result>
 			<result name="fail">/fail.jsp</result>
 		</action>
 
 	</package>
+
 
 </struts>
