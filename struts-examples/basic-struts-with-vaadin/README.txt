@@ -9,7 +9,7 @@ Run command:
  mvn jetty:run
 
 Then point your browser to
- http://localhost:8080/index
+ http://localhost:9999/index
 
 
 You should see a page that either says it's "failing" (no worries, it's
