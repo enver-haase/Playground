@@ -18,4 +18,4 @@ or it's "successful" in which case you should see a simple Vaadin application
 running on the same page.
 
 
-Enver Haase 2016-07-12
+Enver Haase <enver@vaadin.com> 2016-07-12
