@@ -2,3 +2,13 @@
 target/
 crudui.iml
 /src/main/webapp/VAADIN/themes/connect4theme/styles.scss.cache
+/.designer/
+.designer/
+src/.DS_Store
+src/main/.DS_Store
+src/main/java/.DS_Store
+src/main/java/org/
+src/main/resources/static/
+src/main/resources/templates/
+src/main/webapp/VAADIN/themes/connect4theme/connect4theme.scss~
+src/main/webapp/VAADIN/themes/connect4theme/styles.scss~
