@@ -1,4 +1,4 @@
-package com.infraleap.crudui;
+package com.infraleap.connect4;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
