@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;connect4theme&quot;}">
+  <meta name="vaadin-version" content="8.0.5">
+ </head>
+ <body>
+  <vaadin-vertical-layout height="128px" margin="false">
+   <vaadin-horizontal-layout width-full>
+    <vaadin-text-field caption="Your Name:" description="Enter your name here." width-full _id="playerName" :expand></vaadin-text-field>
+    <vaadin-text-field caption="Contestant's Name:" width-full _id="contestantName" :expand></vaadin-text-field>
+   </vaadin-horizontal-layout>
+   <vaadin-horizontal-layout width-full>
+    <vaadin-button description="Press this button request playing against a contestant" plain-text _id="startButton" :expand="0.75">
+      Challenge A Contestant 
+    </vaadin-button>
+    <vaadin-label caption="Time Waiting:" plain-text _id="timeLabel" :expand="0.3">
+      00:00:00 
+    </vaadin-label>
+    <vaadin-label caption="Users Now:" plain-text _id="numberGamesLabel" :expand="0.3">
+      0 
+    </vaadin-label>
+   </vaadin-horizontal-layout>
+  </vaadin-vertical-layout>
+ </body>
+</html>
