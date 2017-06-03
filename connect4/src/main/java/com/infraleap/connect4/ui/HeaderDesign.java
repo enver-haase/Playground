@@ -24,7 +24,7 @@ public class HeaderDesign extends VerticalLayout {
     protected TextField contestantName;
     protected Button startButton;
     protected Label timeLabel;
-    protected Label numberGamesLabel;
+    protected Label numberUsersLabel;
 
     public HeaderDesign() {
         Design.read(this);

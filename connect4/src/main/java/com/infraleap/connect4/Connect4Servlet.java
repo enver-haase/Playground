@@ -1,10 +1,10 @@
 package com.infraleap.connect4;
 
-import com.infraleap.connect4.ui.Connect4UI;
+import com.google.common.eventbus.EventBus;
+import com.infraleap.connect4.event.UpdateNumberOfSessionsEvent;
 import com.vaadin.server.*;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.server.SpringVaadinServlet;
-import com.vaadin.ui.UI;
 
 import javax.servlet.ServletException;
 import java.util.HashSet;
@@ -13,29 +13,15 @@ import java.util.Set;
 @SpringComponent("vaadinServlet")
 public class Connect4Servlet extends SpringVaadinServlet implements SessionInitListener, SessionDestroyListener {
 
-    private static Set<VaadinSession> vaadinSessions = new HashSet<>();
+    public static final String SESSION_KEY = "session";
 
-    private static Thread pusher = new Thread(){
-        {
-            this.start();
-        }
+    private Set<VaadinSession> vaadinSessions = new HashSet<>();
 
-        @Override
-        public void run(){
-            while (true) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                }
+    private EventBus theEventBus = new EventBus();
 
-                for (VaadinSession vaadinSession : vaadinSessions) {
-                    for (UI ui : vaadinSession.getUIs()){
-                        ((Connect4UI) ui).pushNumSessions(vaadinSessions.size());
-                    }
-                }
-            }
-        }
-    };
+    public EventBus getConnect4EventBus(){
+        return theEventBus;
+    }
 
     @Override
     protected void servletInitialized() throws ServletException {
@@ -47,14 +33,28 @@ public class Connect4Servlet extends SpringVaadinServlet implements SessionInitL
     @Override
     public void sessionInit(SessionInitEvent event) throws ServiceException {
         VaadinSession vSession = event.getSession();
+        vSession.setAttribute(SESSION_KEY, this);
+
         WrappedSession wSession = vSession.getSession();
         wSession.setMaxInactiveInterval(60);
 
         vaadinSessions.add(vSession);
+
+        postCurrentNumberOfSessions();
     }
 
     @Override
     public void sessionDestroy(SessionDestroyEvent event) {
         vaadinSessions.remove(event.getSession());
+
+        postCurrentNumberOfSessions();
+    }
+
+    private void postCurrentNumberOfSessions(){
+        theEventBus.post(new UpdateNumberOfSessionsEvent(this, getCurrentNumberOfSessions()));
+    }
+
+    public int getCurrentNumberOfSessions(){
+        return vaadinSessions.size();
     }
 }
