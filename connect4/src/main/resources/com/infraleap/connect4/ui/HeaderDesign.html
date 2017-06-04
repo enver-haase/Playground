@@ -9,16 +9,16 @@
   <vaadin-vertical-layout height="128px" margin="false">
    <vaadin-horizontal-layout width-full>
     <vaadin-text-field caption="Your Name:" description="Enter your name here." width-full _id="playerName" :expand></vaadin-text-field>
-    <vaadin-text-field caption="Contestant's Name:" width-full _id="contestantName" :expand></vaadin-text-field>
+    <vaadin-text-field caption="Contestant's Name:" description="This is your contestant's name." width-full _id="contestantName" :expand></vaadin-text-field>
    </vaadin-horizontal-layout>
    <vaadin-horizontal-layout width-full>
-    <vaadin-button description="Press this button request playing against a contestant" plain-text _id="startButton" :expand="0.75">
+    <vaadin-button description="Press this button request playing against a contestant." plain-text _id="startButton" :expand="0.75">
       Challenge A Contestant 
     </vaadin-button>
-    <vaadin-label caption="Time Waiting:" plain-text _id="timeLabel" :expand="0.3">
+    <vaadin-label caption="Time Waiting:" description="Time waiting for a contentant or their move." plain-text _id="timeLabel" :expand="0.3">
       00:00:00 
     </vaadin-label>
-    <vaadin-label caption="Users Now:" plain-text _id="numberUsersLabel" :expand="0.3">
+    <vaadin-label caption="Users Now:" description="This is the number of people connected to the game." plain-text _id="numberUsersLabel" :expand="0.3">
       0 
     </vaadin-label>
    </vaadin-horizontal-layout>

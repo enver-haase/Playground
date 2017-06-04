@@ -70,8 +70,6 @@ public class PlayfieldView extends PlayfieldDesign {
         return won(Coin.RED);
     }
 
-    private static int N_IN_A_ROW = 4; // we play 4 in a row
-
     private boolean won(Coin coin){
 
         final int numCols = getColumns();
