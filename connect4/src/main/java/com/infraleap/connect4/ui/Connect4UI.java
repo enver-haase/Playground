@@ -5,6 +5,7 @@ import com.infraleap.connect4.Connect4Servlet;
 import com.infraleap.connect4.Connect4SessionState;
 import com.infraleap.connect4.event.*;
 import com.vaadin.annotations.Theme;
+import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
@@ -49,6 +50,8 @@ public class Connect4UI extends UI implements PlayfieldView.ColumnListener {
         mainLayout.addComponent(header);
         mainLayout.addComponent(playfield);
         setContent(mainLayout);
+
+        playfield.addColumnListener(this);
     }
 
     private void updateUIFromState(){
@@ -68,7 +71,13 @@ public class Connect4UI extends UI implements PlayfieldView.ColumnListener {
             }
         }
 
-        if (!state.contestantRequested()){
+        if (state.getGameLost()){
+            header.startButton.setCaption("GAME LOST: "+state.getGameEndReason());
+            header.startButton.setEnabled(false);
+        } else if (state.getGameWon()){
+            header.startButton.setCaption("GAME WON: "+state.getGameEndReason());
+            header.startButton.setEnabled(false);
+        } else if (!state.contestantRequested()){
             header.startButton.setCaption("Challenge A Contestant");
             header.startButton.setEnabled(true);
         }
@@ -101,18 +110,12 @@ public class Connect4UI extends UI implements PlayfieldView.ColumnListener {
     @Subscribe
     public void handleStateChange(StateChangeEvent event){
         if (event.getSource() == state){
-            System.out.println("UI '"+System.identityHashCode(this)+"' updating from state '"+System.identityHashCode(state)+"', session is '"+System.identityHashCode(this.getSession())+"'.");
+            //System.out.println("UI '"+System.identityHashCode(this)+"' updating from state '"+System.identityHashCode(state)+"', session is '"+System.identityHashCode(this.getSession())+"'.");
             updateUIFromState();
         }
         else{
-            System.out.println("IGNORING STATE CHANGE EVENT (source '"+System.identityHashCode(event.getSource())+"'): UI '"+System.identityHashCode(this)+"' NOT updating from state '"+System.identityHashCode(state)+"', session is '"+System.identityHashCode(this.getSession())+"'.");
-        }
-    }
-
-    @Subscribe
-    public void handleWon(GameWonEvent event){
-        if (event.getSource() == state){
-            Notification.show("Other player went away. YOU WIN!", Notification.Type.ERROR_MESSAGE); // error message must be clicked away.
+            setContestantName(state.getContestantName());
+            //System.out.println("IGNORING STATE CHANGE EVENT (source '"+System.identityHashCode(event.getSource())+"'): UI '"+System.identityHashCode(this)+"' NOT updating from state '"+System.identityHashCode(state)+"', session is '"+System.identityHashCode(this.getSession())+"'.");
         }
     }
 

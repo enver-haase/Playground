@@ -6,8 +6,6 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.VaadinSessionScope;
 
-import javax.management.Notification;
-
 @VaadinSessionScope
 @SpringComponent
 public class Connect4SessionState {
@@ -21,6 +19,9 @@ public class Connect4SessionState {
     private String playerName;
     private Coin[][] playfield;
     private boolean contestantRequested;
+    private boolean gameWon;
+    private boolean gameLost;
+    private String gameEndReason;
 
     private Connect4SessionState contestant;
 
@@ -51,6 +52,9 @@ public class Connect4SessionState {
         this.myColor = Coin.EMPTY; // game is not in progress
         this.playerUp = Coin.EMPTY; //
         this.contestantRequested = false;
+        this.gameLost = false;
+        this.gameWon = false;
+        this.gameEndReason = null;
 
         this.contestant = null;
     }
@@ -59,7 +63,7 @@ public class Connect4SessionState {
     public void setPlayername(String name){
         if (!name.equals(this.playerName)) {
             this.playerName = name;
-            postUpdateEvent();
+            postStateChangeEvent();
         }
     }
     public String getPlayerName(){
@@ -83,17 +87,25 @@ public class Connect4SessionState {
         return myColor;
     }
 
+    public boolean getGameWon() { return gameWon; }
+
+    public boolean getGameLost() { return gameLost; }
+
+    public String getGameEndReason(){
+        return gameEndReason;
+    }
+
     public boolean contestantRequested(){
         return contestantRequested;
     }
 
     public void requestContestant(VaadinSession session){
         this.contestantRequested = true;
-        postUpdateEvent();
+        postStateChangeEvent();
         Connect4Servlet.theEventBus.post(new ContestantRequestEvent(new PlayerData(this, session)));
     }
 
-    private void postUpdateEvent(){
+    private void postStateChangeEvent(){
         Connect4Servlet.theEventBus.post(new StateChangeEvent(this));
     }
 
@@ -110,7 +122,7 @@ public class Connect4SessionState {
             contestant = event.getFirstPlayer().getPlayerState();
         }
 
-        postUpdateEvent();
+        postStateChangeEvent();
     }
 
     @Subscribe
@@ -126,5 +138,23 @@ public class Connect4SessionState {
         }
     }
 
+    @Subscribe
+    public void handleWon(GameWonEvent event){
+        if (event.getSource() == this){
+            playerUp = Coin.EMPTY;
+            gameWon = true;
+            gameLost = false;
+            gameEndReason = event.getReason();
+            postStateChangeEvent();
+        }
+
+        if (event.getSource() == contestant){
+            playerUp = Coin.EMPTY;
+            gameLost = true;
+            gameWon = false;
+            gameEndReason = event.getReason();
+            postStateChangeEvent();
+        }
+    }
 
 }
