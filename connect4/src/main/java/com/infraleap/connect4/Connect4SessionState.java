@@ -2,13 +2,18 @@ package com.infraleap.connect4;
 
 import com.google.common.eventbus.Subscribe;
 import com.infraleap.connect4.event.*;
+import com.infraleap.connect4.ui.PlayfieldView;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.VaadinSessionScope;
+import com.vaadin.ui.Image;
 
 @VaadinSessionScope
 @SpringComponent
 public class Connect4SessionState {
+
+    private final int ROWS = 6;
+    private final int COLUMNS = 7;
 
     public enum Coin {
         RED,
@@ -41,7 +46,7 @@ public class Connect4SessionState {
 
         this.playerName = "";
 
-        this.playfield = new Coin[7][6];
+        this.playfield = new Coin[COLUMNS][ROWS];
         for (int col = 0; col < playfield.length; col++){
             for (int row = 0; row < playfield[col].length; row++)
             {
@@ -72,9 +77,6 @@ public class Connect4SessionState {
 
     public String getContestantName() { return contestant==null? "" : contestant.playerName; }
 
-    public void setPlayfield(Coin[][] playfield){
-        this.playfield = playfield;
-    }
     public Coin[][] getPlayfield(){
         return playfield;
     }
@@ -127,9 +129,25 @@ public class Connect4SessionState {
 
     @Subscribe
     public void handleMoveMade(MoveMadeEvent event){
-        System.out.println("MOVE MADE - SESSION STATE SAYS.");
-    }
+        if (event.getSource() == this){
+            int column = event.getMove();
+            for (int row = ROWS-1; row >= 0; row--){
+                if (playfield[column][row] == Coin.EMPTY){
 
+                    playfield[column][row] = playerUp;
+                    contestant.playfield[column][row] = playerUp;
+
+                    playerUp = (playerUp == Coin.RED? Coin.YELLOW : Coin.RED); // swap players
+                    contestant.playerUp = playerUp;
+
+                    postStateChangeEvent();
+                    contestant.postStateChangeEvent();
+
+                    break;
+                }
+            }
+        }
+    }
 
     @Subscribe
     public void handleSessionClosed(PlayerAbortedEvent event){
@@ -156,5 +174,4 @@ public class Connect4SessionState {
             postStateChangeEvent();
         }
     }
-
 }

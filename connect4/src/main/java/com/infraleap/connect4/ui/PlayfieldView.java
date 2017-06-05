@@ -80,15 +80,7 @@ public class PlayfieldView extends PlayfieldDesign {
         });
     }
 
-    public boolean yellowWon(){
-        return won(Coin.YELLOW);
-    }
-
-    public boolean redWon(){
-        return won(Coin.RED);
-    }
-
-    private boolean won(Coin coin){
+    public boolean gameWon(Coin coin){ // TODO: move game logic to state, out of the UI.
         final int numCols = getColumns();
         final int numRows = getRows();
 

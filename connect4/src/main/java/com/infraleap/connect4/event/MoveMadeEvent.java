@@ -1,5 +1,6 @@
 package com.infraleap.connect4.event;
 
+import com.infraleap.connect4.Connect4SessionState;
 import com.infraleap.connect4.ui.Connect4UI;
 
 import java.util.EventObject;
@@ -8,7 +9,7 @@ public class MoveMadeEvent extends EventObject {
 
     private int column;
 
-    public MoveMadeEvent(Connect4UI source, int column){
+    public MoveMadeEvent(Connect4SessionState source, int column){
         super(source);
         this.column = column;
     }
@@ -18,7 +19,7 @@ public class MoveMadeEvent extends EventObject {
     }
 
     @Override
-    public Connect4UI getSource() {
-        return (Connect4UI) super.getSource();
+    public Connect4SessionState getSource() {
+        return (Connect4SessionState) super.getSource();
     }
 }

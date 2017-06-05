@@ -7,9 +7,13 @@ import com.infraleap.connect4.event.*;
 import com.vaadin.annotations.Theme;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.net.URI;
 
 
 @Theme("connect4theme")
@@ -25,6 +29,9 @@ public class Connect4UI extends UI implements PlayfieldView.ColumnListener {
     @Autowired
     private PlayfieldView playfield;
 
+    @Autowired
+    private FooterView footer;
+
     @Override
     protected void init(VaadinRequest request) {
         // init() is called after attach, so we are attached to our session!
@@ -35,6 +42,7 @@ public class Connect4UI extends UI implements PlayfieldView.ColumnListener {
 
         // init behavior of the UI
         header.playerName.addValueChangeListener( event -> state.setPlayername(header.playerName.getValue()) );
+        header.playerName.setValueChangeMode(ValueChangeMode.EAGER);
         header.contestantName.setReadOnly(true);
 
         header.startButton.setDisableOnClick(true);
@@ -47,14 +55,16 @@ public class Connect4UI extends UI implements PlayfieldView.ColumnListener {
 
         // assemble the component tree
         Layout mainLayout = new VerticalLayout();
-        mainLayout.addComponent(header);
-        mainLayout.addComponent(playfield);
+        mainLayout.addComponents(header, playfield, footer);
         setContent(mainLayout);
 
         playfield.addColumnListener(this);
     }
 
     private void updateUIFromState(){
+
+        System.out.println(this.toString() + " ### " + state.getColor());
+
         setPlayerName(state.getPlayerName());
 
         setContestantName(state.getContestantName());
@@ -88,8 +98,15 @@ public class Connect4UI extends UI implements PlayfieldView.ColumnListener {
                 header.startButton.setEnabled(false);
             }
             else{
-                header.startButton.setCaption("Game in Progress...");
+                if (state.getPlayerUp() == state.getColor()){
+                    header.startButton.setCaption("(YOUR MOVE)");
+                }
+                else{
+                    header.startButton.setCaption("(WAITING FOR MOVE)");
+                }
                 header.startButton.setEnabled(false);
+                String colorName = state.getColor() == Connect4SessionState.Coin.RED? "RED" : "YELLOW";
+                footer.colorDisplayButton.setCaption("Your color: " + colorName);
             }
         }
     }
@@ -136,6 +153,21 @@ public class Connect4UI extends UI implements PlayfieldView.ColumnListener {
 
     @Override
     public void onColumnClicked(int column) {
-        System.out.println("Column clicked: "+column);
+        Connect4SessionState.Coin ourColor = state.getColor();
+        if (state.getPlayerUp() != Connect4SessionState.Coin.EMPTY) /* if game is in progress */ {
+            if (state.getPlayerUp() == state.getColor()) { /* if it is our turn */
+                PlayfieldView.Coin pfCoin = (ourColor == Connect4SessionState.Coin.YELLOW ? PlayfieldView.Coin.YELLOW : PlayfieldView.Coin.RED);
+                try {
+                    this.playfield.dropCoin(pfCoin, column);
+                    Connect4Servlet.theEventBus.post(new MoveMadeEvent(state, column)); /* update other UIs, swap plwayer turns */
+                } catch (IllegalArgumentException exc) {
+                    // do nothing. This column is full.
+                }
+
+                if (playfield.gameWon(pfCoin)) {
+                    Connect4Servlet.theEventBus.post(new GameWonEvent(state, "Four in a Row!"));
+                }
+            }
+        }
     }
 }
