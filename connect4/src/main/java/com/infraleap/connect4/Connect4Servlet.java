@@ -2,6 +2,7 @@ package com.infraleap.connect4;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.infraleap.connect4.event.GameStartEvent;
 import com.infraleap.connect4.event.StartButtonClickedEvent;
 import com.infraleap.connect4.event.UpdateNumberOfSessionsEvent;
 import com.vaadin.server.*;
@@ -9,6 +10,7 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.server.SpringVaadinServlet;
 
 import javax.servlet.ServletException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,15 +22,11 @@ import java.util.Set;
  */
 public class Connect4Servlet extends SpringVaadinServlet implements SessionInitListener, SessionDestroyListener {
 
-    public static final String SESSION_KEY_SERVLET = Connect4Servlet.class.getCanonicalName();
+    private static final Set<VaadinSession> vaadinSessions = Collections.synchronizedSet(new HashSet<>());
 
-    private Set<VaadinSession> vaadinSessions = new HashSet<>();
+    private static final Set<Connect4SessionState> willingToPlaySessions = Collections.synchronizedSet(new HashSet<>());
 
-    private EventBus theEventBus = new EventBus();
-
-    public EventBus getConnect4EventBus(){
-        return theEventBus;
-    }
+    public static final EventBus theEventBus = new EventBus();
 
     @Override
     protected void servletInitialized() throws ServletException {
@@ -48,12 +46,10 @@ public class Connect4Servlet extends SpringVaadinServlet implements SessionInitL
     @Override
     public void sessionInit(SessionInitEvent event) throws ServiceException {
         VaadinSession vSession = event.getSession();
-        vSession.setAttribute(SESSION_KEY_SERVLET, this);
+        vaadinSessions.add(vSession);
 
         WrappedSession wSession = vSession.getSession();
         wSession.setMaxInactiveInterval(60);
-
-        vaadinSessions.add(vSession);
 
         postCurrentNumberOfSessions();
     }
@@ -69,15 +65,25 @@ public class Connect4Servlet extends SpringVaadinServlet implements SessionInitL
         theEventBus.post(new UpdateNumberOfSessionsEvent(this, getCurrentNumberOfSessions()));
     }
 
-    public int getCurrentNumberOfSessions(){
+    public static int getCurrentNumberOfSessions(){
         return vaadinSessions.size();
     }
 
 
     @Subscribe
     public void handleStartEvent(StartButtonClickedEvent event){
-        VaadinSession requestingSession = event.getSource().getSession();
+        synchronized (willingToPlaySessions) {
+            willingToPlaySessions.add(event.getRequestor());
 
-        System.out.println("GAME START REQUESTED"); // TODO
+            if (willingToPlaySessions.size() >= 2) {
+                Connect4SessionState[] players = willingToPlaySessions.toArray(new Connect4SessionState[0]);
+                Connect4SessionState playerOne = players[0];
+                Connect4SessionState playerTwo = players[1];
+                willingToPlaySessions.remove(playerOne);
+                willingToPlaySessions.remove(playerTwo);
+                theEventBus.post(new GameStartEvent(this, playerOne, playerTwo));
+            }
+        }
     }
+
 }

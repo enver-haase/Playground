@@ -8,11 +8,21 @@ import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Image;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Consumer;
 
 @SpringComponent
 @UIScope
 public class PlayfieldView extends PlayfieldDesign {
+
+
+    public interface ColumnListener {
+        void onColumnClicked(int column);
+    }
+
+    private final Set<ColumnListener> columnListeners = new HashSet<>();
+
     public PlayfieldView() {
         super();
 
@@ -22,11 +32,19 @@ public class PlayfieldView extends PlayfieldDesign {
             for (int row = 0; row < getRows(); row++){
                 final int columnClicked = col;
                 Image image = (Image) getComponent(col, row);
-                image.addClickListener(event -> {if (event.getButton().equals(MouseEventDetails.MouseButton.LEFT)) onColumnClicked(columnClicked);});
+                image.addClickListener(event -> {if (event.getButton().equals(MouseEventDetails.MouseButton.LEFT)) {
+                    for (ColumnListener cl : columnListeners) {
+                        cl.onColumnClicked(columnClicked);
+                    }
+                }
+                });
             }
         }
     }
 
+    public void addColumnListener(ColumnListener cl){
+        this.columnListeners.add(cl);
+    }
 
     public enum Coin{
         RED("img/Red.png"),
@@ -71,7 +89,6 @@ public class PlayfieldView extends PlayfieldDesign {
     }
 
     private boolean won(Coin coin){
-
         final int numCols = getColumns();
         final int numRows = getRows();
 
@@ -117,19 +134,5 @@ public class PlayfieldView extends PlayfieldDesign {
         }
 
         return false;
-    }
-
-    private void onColumnClicked(int column){
-        System.err.println("Clicked: "+column);
-        // TODO: eventbus notification of which column was clicked.
-
-        //TODO: remove
-        dropCoin(Coin.YELLOW, column);
-        System.out.println(yellowWon());
-
-    }
-
-    private void checkWin(){
-        // TODO: eventbus notification if we have a winner and which color.
     }
 }

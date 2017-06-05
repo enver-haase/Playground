@@ -1,24 +1,19 @@
 package com.infraleap.connect4.ui;
 
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.infraleap.connect4.Connect4Servlet;
 import com.infraleap.connect4.Connect4SessionState;
-import com.infraleap.connect4.event.ContestantRequestAcceptedEvent;
-import com.infraleap.connect4.event.StartButtonClickedEvent;
-import com.infraleap.connect4.event.UpdateNumberOfSessionsEvent;
-import com.infraleap.connect4.event.PlayernameChangedEvent;
+import com.infraleap.connect4.event.*;
 import com.vaadin.annotations.Theme;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.infraleap.connect4.Connect4Servlet.SESSION_KEY_SERVLET;
 
 @Theme("connect4theme")
 @SpringUI()
-public class Connect4UI extends UI {
+public class Connect4UI extends UI implements PlayfieldView.ColumnListener {
 
     @Autowired
     private Connect4SessionState state;
@@ -34,44 +29,72 @@ public class Connect4UI extends UI {
 
     @Override
     protected void init(VaadinRequest request) {
-        // init() is called after attach, so we are attached!
-        getEventBus().register(this);
+        // init() is called after attach, so we are attached to our session!
+        Connect4Servlet.theEventBus.register(this);
 
         // Notice quickly if other UIs are closed
         setPollInterval(3000);
 
-        Layout mainLayout = new VerticalLayout();
-
-        mainLayout.addComponent(header);
-
-        header.playerName.setValue(state.getPlayerName());
-        header.playerName.addValueChangeListener(event -> { state.setPlayerName(event.getValue());
-                                                            getEventBus().post(new PlayernameChangedEvent(this, event.getValue())); });
-
+        // init behavior of the UI
+        header.playerName.addValueChangeListener( event -> state.setPlayername(header.playerName.getValue()) );
         header.contestantName.setReadOnly(true);
 
-        header.startButton.addClickListener(event -> getEventBus().post(new StartButtonClickedEvent(this)));
-        header.numberUsersLabel.setValue(String.valueOf(getCurrentNumberOfSessions()));
+        header.startButton.setDisableOnClick(true);
+        header.startButton.addClickListener(event -> state.requestContestant());
 
+        // initial values, taken from the session state (copy other UIs' looks, share the same info across all UIs)
+        updateUIFromState();
+        header.numberUsersLabel.setValue(String.valueOf(Connect4Servlet.getCurrentNumberOfSessions()));
+
+
+        // assemble the component tree
+        Layout mainLayout = new VerticalLayout();
+        mainLayout.addComponent(header);
         mainLayout.addComponent(playfield);
         mainLayout.addComponent(footer);
-
         setContent(mainLayout);
     }
+
+    private void updateUIFromState(){
+        setPlayerName(state.getPlayerName());
+
+        setContestantName(state.getContestantName());
+
+        playfield.clear();
+        Connect4SessionState.Coin[][] playfield_state = state.getPlayfield(); // [col][row]
+        for (int row = playfield_state[0].length -1; row >= 0; row--){
+            for (int col = 0; col < playfield_state.length; col++){
+                if (playfield_state[col][row] == Connect4SessionState.Coin.YELLOW){
+                    playfield.dropCoin(PlayfieldView.Coin.YELLOW, col);
+                } else if (playfield_state[col][row] == Connect4SessionState.Coin.RED){
+                    playfield.dropCoin(PlayfieldView.Coin.RED, col);
+                }
+            }
+        }
+
+        if (!state.contestantRequested()){
+            header.startButton.setCaption("Challenge A Contestant");
+            header.startButton.setEnabled(true);
+        }
+        else{
+            boolean waitingForContestant = (state.getColor() == Connect4SessionState.Coin.EMPTY);
+            if (waitingForContestant){
+                header.startButton.setCaption("Waiting for Contestant...");
+                header.startButton.setEnabled(false);
+            }
+            else{
+                header.startButton.setCaption("Game in Progress...");
+                header.startButton.setEnabled(false);
+            }
+        }
+    }
+
 
     @Override
     public void detach(){
         // attach is called before init()
-        getEventBus().unregister(this);
+        Connect4Servlet.theEventBus.unregister(this);
         super.detach();
-    }
-
-    private EventBus getEventBus(){
-        return ((Connect4Servlet) (getSession().getAttribute(SESSION_KEY_SERVLET))).getConnect4EventBus();
-    }
-
-    private int getCurrentNumberOfSessions(){
-        return ((Connect4Servlet) (getSession().getAttribute(SESSION_KEY_SERVLET))).getCurrentNumberOfSessions();
     }
 
     @Subscribe
@@ -80,28 +103,33 @@ public class Connect4UI extends UI {
     }
 
     @Subscribe
-    public void handlePlayerNameChanged(PlayernameChangedEvent e){
-//        if (e.getSource().getSession() == getSession()) {
-//            // make sure we ignore other sessions. We could as well check our session state and update from there.
-//            setPlayerName(e.getPlayername());
-//        }
-        setPlayerName(state.getPlayerName());
+    public void handleStateChange(StateChangeEvent event){
+        if (event.getSource() == state){
+            System.out.println("UI '"+System.identityHashCode(this)+"' updating from state '"+System.identityHashCode(state)+"', session is '"+System.identityHashCode(this.getSession())+"'.");
+            updateUIFromState();
+        }
+        else{
+            System.out.println("IGNORING STATE CHANGE EVENT (source '"+System.identityHashCode(event.getSource())+"'): UI '"+System.identityHashCode(this)+"' NOT updating from state '"+System.identityHashCode(state)+"', session is '"+System.identityHashCode(this.getSession())+"'.");
+        }
     }
-
-    @Subscribe
-    public void handleContestantRequest(ContestantRequestAcceptedEvent event){
-        // TODO
-    }
-
 
     private void setContestantName(String name){
-        header.contestantName.setReadOnly(false);
-        header.contestantName.setValue(name);
-        header.contestantName.setReadOnly(true);
+        if (!name.equals(header.contestantName.getCaption())) {
+            header.contestantName.setReadOnly(false);
+            header.contestantName.setValue(name);
+            header.contestantName.setReadOnly(true);
+        }
     }
 
     private void setPlayerName(String name)
     {
-        header.playerName.setValue(name);
+        if (!name.equals(header.playerName.getValue())) {
+            header.playerName.setValue(name);
+        }
+    }
+
+    @Override
+    public void onColumnClicked(int column) {
+        System.out.println("Column clicked: "+column);
     }
 }
