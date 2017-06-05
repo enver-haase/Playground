@@ -2,15 +2,14 @@ package com.infraleap.connect4;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.infraleap.connect4.event.GameStartEvent;
-import com.infraleap.connect4.event.StartButtonClickedEvent;
-import com.infraleap.connect4.event.UpdateNumberOfSessionsEvent;
+import com.infraleap.connect4.event.*;
 import com.vaadin.server.*;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.server.SpringVaadinServlet;
 
 import javax.servlet.ServletException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,7 +23,9 @@ public class Connect4Servlet extends SpringVaadinServlet implements SessionInitL
 
     private static final Set<VaadinSession> vaadinSessions = Collections.synchronizedSet(new HashSet<>());
 
-    private static final Set<Connect4SessionState> willingToPlaySessions = Collections.synchronizedSet(new HashSet<>());
+    private static final HashMap<VaadinSession, PlayerData> willingToPlay = new HashMap<>();
+
+    private static final HashMap<VaadinSession, PlayerData> playing = new HashMap<>();
 
     public static final EventBus theEventBus = new EventBus();
 
@@ -56,7 +57,17 @@ public class Connect4Servlet extends SpringVaadinServlet implements SessionInitL
 
     @Override
     public void sessionDestroy(SessionDestroyEvent event) {
-        vaadinSessions.remove(event.getSession());
+
+        VaadinSession session = event.getSession();
+
+        vaadinSessions.remove(session);
+
+        willingToPlay.remove(session);
+        PlayerData loser = playing.remove(session);
+
+        if (loser != null) {
+            theEventBus.post(new PlayerAbortedEvent(this, loser));
+        }
 
         postCurrentNumberOfSessions();
     }
@@ -71,16 +82,25 @@ public class Connect4Servlet extends SpringVaadinServlet implements SessionInitL
 
 
     @Subscribe
-    public void handleStartEvent(StartButtonClickedEvent event){
-        synchronized (willingToPlaySessions) {
-            willingToPlaySessions.add(event.getRequestor());
+    public void handleContestantRequestEvent(ContestantRequestEvent event){
+        synchronized (willingToPlay) {
+            willingToPlay.put(event.getSource().getSession(), event.getSource());
 
-            if (willingToPlaySessions.size() >= 2) {
-                Connect4SessionState[] players = willingToPlaySessions.toArray(new Connect4SessionState[0]);
-                Connect4SessionState playerOne = players[0];
-                Connect4SessionState playerTwo = players[1];
-                willingToPlaySessions.remove(playerOne);
-                willingToPlaySessions.remove(playerTwo);
+            if (willingToPlay.size() >= 2) {
+
+                System.out.println("CONNECTING TWO PLAYERS");
+
+                VaadinSession[] sessions = willingToPlay.keySet().toArray(new VaadinSession[0]);
+
+                PlayerData playerOne = willingToPlay.get(sessions[0]);
+                PlayerData playerTwo = willingToPlay.get(sessions[1]);
+
+                willingToPlay.remove(sessions[0]);
+                willingToPlay.remove(sessions[1]);
+
+                playing.put(sessions[0], playerOne);
+                playing.put(sessions[1], playerTwo);
+
                 theEventBus.post(new GameStartEvent(this, playerOne, playerTwo));
             }
         }

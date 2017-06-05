@@ -24,9 +24,6 @@ public class Connect4UI extends UI implements PlayfieldView.ColumnListener {
     @Autowired
     private PlayfieldView playfield;
 
-    @Autowired
-    private FooterView footer;
-
     @Override
     protected void init(VaadinRequest request) {
         // init() is called after attach, so we are attached to our session!
@@ -40,7 +37,7 @@ public class Connect4UI extends UI implements PlayfieldView.ColumnListener {
         header.contestantName.setReadOnly(true);
 
         header.startButton.setDisableOnClick(true);
-        header.startButton.addClickListener(event -> state.requestContestant());
+        header.startButton.addClickListener(event -> state.requestContestant(getSession()));
 
         // initial values, taken from the session state (copy other UIs' looks, share the same info across all UIs)
         updateUIFromState();
@@ -51,7 +48,6 @@ public class Connect4UI extends UI implements PlayfieldView.ColumnListener {
         Layout mainLayout = new VerticalLayout();
         mainLayout.addComponent(header);
         mainLayout.addComponent(playfield);
-        mainLayout.addComponent(footer);
         setContent(mainLayout);
     }
 
@@ -110,6 +106,13 @@ public class Connect4UI extends UI implements PlayfieldView.ColumnListener {
         }
         else{
             System.out.println("IGNORING STATE CHANGE EVENT (source '"+System.identityHashCode(event.getSource())+"'): UI '"+System.identityHashCode(this)+"' NOT updating from state '"+System.identityHashCode(state)+"', session is '"+System.identityHashCode(this.getSession())+"'.");
+        }
+    }
+
+    @Subscribe
+    public void handleWon(GameWonEvent event){
+        if (event.getSource() == state){
+            Notification.show("Other player went away. YOU WIN!", Notification.Type.ERROR_MESSAGE); // error message must be clicked away.
         }
     }
 

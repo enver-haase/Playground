@@ -1,12 +1,12 @@
 package com.infraleap.connect4;
 
 import com.google.common.eventbus.Subscribe;
-import com.infraleap.connect4.event.GameStartEvent;
-import com.infraleap.connect4.event.MoveMadeEvent;
-import com.infraleap.connect4.event.StateChangeEvent;
+import com.infraleap.connect4.event.*;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.VaadinSessionScope;
-import org.springframework.web.context.annotation.SessionScope;
+
+import javax.management.Notification;
 
 @VaadinSessionScope
 @SpringComponent
@@ -87,9 +87,10 @@ public class Connect4SessionState {
         return contestantRequested;
     }
 
-    public void requestContestant(){
+    public void requestContestant(VaadinSession session){
         this.contestantRequested = true;
         postUpdateEvent();
+        Connect4Servlet.theEventBus.post(new ContestantRequestEvent(new PlayerData(this, session)));
     }
 
     private void postUpdateEvent(){
@@ -100,18 +101,30 @@ public class Connect4SessionState {
     public void handleGameStart(GameStartEvent event){
         this.playerUp = Coin.YELLOW; // yellow always starts
 
-        if (event.getFirstPlayer() == this){
+        if (event.getFirstPlayer().getPlayerState() == this){
             this.myColor = Coin.YELLOW;
-
+            contestant = event.getSecondPlayer().getPlayerState();
         }
-        else if (event.getSecondPlayer() == this){
+        else if (event.getSecondPlayer().getPlayerState() == this){
             this.myColor = Coin.RED;
+            contestant = event.getFirstPlayer().getPlayerState();
         }
+
+        postUpdateEvent();
     }
 
     @Subscribe
     public void handleMoveMade(MoveMadeEvent event){
         System.out.println("MOVE MADE - SESSION STATE SAYS.");
     }
+
+
+    @Subscribe
+    public void handleSessionClosed(PlayerAbortedEvent event){
+        if (event.getPlayer().getPlayerState() == contestant){
+            Connect4Servlet.theEventBus.post(new GameWonEvent(this, "Other player went away."));
+        }
+    }
+
 
 }

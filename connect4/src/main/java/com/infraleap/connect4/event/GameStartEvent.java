@@ -2,26 +2,24 @@ package com.infraleap.connect4.event;
 
 
 import com.infraleap.connect4.Connect4Servlet;
-import com.infraleap.connect4.Connect4SessionState;
-
 import java.util.EventObject;
 
 public class GameStartEvent extends EventObject {
 
-    private Connect4SessionState firestPlayer;
-    private Connect4SessionState secondPlayer;
+    private PlayerData firstPlayer;
+    private PlayerData secondPlayer;
 
-    public GameStartEvent(Connect4Servlet source, Connect4SessionState firstPlayer, Connect4SessionState secondPlayer){
+    public GameStartEvent(Connect4Servlet source, PlayerData firstPlayer, PlayerData secondPlayer){
         super(source);
-        this.firestPlayer = firstPlayer;
+        this.firstPlayer = firstPlayer;
         this.secondPlayer = secondPlayer;
     }
 
-    public Connect4SessionState getFirstPlayer(){
-        return firestPlayer;
+    public PlayerData getFirstPlayer(){
+        return firstPlayer;
     }
 
-    public Connect4SessionState getSecondPlayer(){
+    public PlayerData getSecondPlayer(){
         return secondPlayer;
     }
 
