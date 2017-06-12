@@ -5,7 +5,7 @@ package com.infraleap.springcourse;
  */
 public interface Constants {
 
-    public final static String FIRST = ""; // Vaadin Spring specialty: empty is the default first view
-    public final static String SECOND = "second";
-    public final static String THIRD = "third";
+    String FIRST = ""; // Vaadin Spring specialty: empty is the default first view
+    String SECOND = "second";
+    String THIRD = "third";
 }
