@@ -1,5 +1,5 @@
 
-
+docker login # remember your email address is NOT your login name at hub.docker.com
 sudo docker build -t connect4app .
 sudo docker run -d -p 8080:8080 connect4app
 sudo docker stop <HASH-YOU-GET-FROM-ABOVE-COMMAND>
