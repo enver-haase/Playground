@@ -116,23 +116,23 @@ public class SummaryTree extends VerticalLayout {
 
 		//treeGrid.setItemDetailsRenderer(new ComponentRenderer<>(node -> new Icon(node.getChildren().isEmpty()? VaadinIcon.CIRCLE : VaadinIcon.ABACUS)));
 		treeGrid.setItemDetailsRenderer(new ComponentRenderer<>(() -> new Icon(VaadinIcon.ABACUS)));
-		treeGrid.setDetailsVisible(root, true);
+		setAllDetailsVisible(treeGrid, root, false);
 
-		Button button = new Button("setDetailsVisible(root, true) and setDetailsVisibleOnClick(true)");
-		button.addClickListener( evt -> {
-			setAllDetailsVisible(treeGrid, root);
-			treeGrid.setDetailsVisibleOnClick(true);
-		});
+		add(treeGrid);
 
-		add(treeGrid, button);
-
+		treeGrid.asSingleSelect().addValueChangeListener(
+			event -> {
+				treeGrid.setDetailsVisible(event.getOldValue(), false);
+				treeGrid.setDetailsVisible(event.getValue(), true);
+			}
+		);
 	}
 
-	private <T> void setAllDetailsVisible(TreeGrid<Node<T>> grid, Node<T> node){
-		grid.setDetailsVisible(node, true);
+	private <T> void setAllDetailsVisible(TreeGrid<Node<T>> grid, Node<T> node, boolean visible){
+		grid.setDetailsVisible(node, visible);
 
 		for (Node<T> child : node.getChildren()){
-			setAllDetailsVisible(grid, child);
+			setAllDetailsVisible(grid, child, visible);
 		}
 	}
 

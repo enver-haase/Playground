@@ -9,11 +9,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.function.BinaryOperator;
 
-/**
- * The main view contains a button and a click listener.
- */
 @Route("")
-@PWA(name = "Project Base for Vaadin Flow", shortName = "Project Base")
 @SuppressWarnings("unused")
 public class MainView extends VerticalLayout {
 
