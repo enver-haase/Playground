@@ -122,8 +122,15 @@ public class SummaryTree extends VerticalLayout {
 
 		treeGrid.asSingleSelect().addValueChangeListener(
 			event -> {
-				treeGrid.setDetailsVisible(event.getOldValue(), false);
-				treeGrid.setDetailsVisible(event.getValue(), true);
+				Node<T> old = event.getOldValue();
+				if (old != null) {
+					treeGrid.setDetailsVisible(event.getOldValue(), false);
+				}
+
+				Node<T> current = event.getValue();
+				if (current != null) {
+					treeGrid.setDetailsVisible(current, true);
+				}
 			}
 		);
 	}
