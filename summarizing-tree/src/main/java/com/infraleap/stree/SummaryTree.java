@@ -120,12 +120,20 @@ public class SummaryTree extends VerticalLayout {
 
 		Button button = new Button("setDetailsVisible(root, true) and setDetailsVisibleOnClick(true)");
 		button.addClickListener( evt -> {
-			treeGrid.setDetailsVisible(root, true);
+			setAllDetailsVisible(treeGrid, root);
 			treeGrid.setDetailsVisibleOnClick(true);
 		});
 
 		add(treeGrid, button);
 
+	}
+
+	private <T> void setAllDetailsVisible(TreeGrid<Node<T>> grid, Node<T> node){
+		grid.setDetailsVisible(node, true);
+
+		for (Node<T> child : node.getChildren()){
+			setAllDetailsVisible(grid, child);
+		}
 	}
 
 }
