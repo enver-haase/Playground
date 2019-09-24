@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Configures CDI to discover all beans.
+
+ This is called an "explicit archive".
+
+ Omitting beans.xml, or setting bean-discovery-mode="ANNOTATED",
+ makes the archive an implicit archive. In this case, the container
+ will scan for beans with annotated scope types.
+
+ -->
+
+<beans
+        xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee 
+                      http://xmlns.jcp.org/xml/ns/javaee/beans_1_1.xsd"
+        bean-discovery-mode="all">
+</beans>
