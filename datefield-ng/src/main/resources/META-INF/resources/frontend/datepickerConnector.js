@@ -126,11 +126,11 @@ window.alert("-- overridden! --");
 
                 datepicker.i18n.parseDate = tryCatchWrapper(function (dateString) {
 
-                    console.log("As passed in: " + dateString);
+                    //console.log("As passed in: " + dateString);
 
                     dateString = cleanString(dateString);
 
-                    console.log("Clean: " + dateString);
+                    //console.log("Clean: " + dateString);
 
                     if (dateString.length === 0) {
                         return;
