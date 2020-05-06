@@ -5,8 +5,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import org.vaadin.enver.components.BetterDatePicker;
 
-import java.time.LocalDate;
-
 /**
  * The main view contains a button and a click listener.
  */
