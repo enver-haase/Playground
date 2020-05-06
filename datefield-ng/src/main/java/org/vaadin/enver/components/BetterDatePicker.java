@@ -7,7 +7,6 @@ import jdk.internal.jline.internal.Nullable;
 import java.time.LocalDate;
 import java.util.*;
 
-@JsModule("./betterdatepicker.js")
 public class BetterDatePicker extends DatePicker {
 
     public enum I18N {
