@@ -125,17 +125,38 @@ window.alert("-- overridden! --");
                 });
 
                 datepicker.i18n.parseDate = tryCatchWrapper(function (dateString) {
+
+                    console.log("As passed in: " + dateString);
+
                     dateString = cleanString(dateString);
 
-                    if (dateString.length == 0) {
+                    console.log("Clean: " + dateString);
+
+                    if (dateString.length === 0) {
                         return;
                     }
 
                     let match = dateString.match(datepicker.$connector.regex);
-                    if (match && match.length == 4) {
+                    if (match && match.length === 4) {
                         for (let i = 1; i < 4; i++) {
+                            //console.log(parseInt(match[i]));
                             datepicker.$connector.parts[i-1].value = parseInt(match[i]);
                         }
+
+                        // special handling for 1-digit or 2-digit years
+                        if (datepicker.$connector.yearPart.value >= 0 && datepicker.$connector.yearPart.value < 100){
+                            let thisYear = new Date().getFullYear();
+                            let thisCentury = 100 * Math.floor(thisYear / 100); // e.g. 2000
+                            let lastCentury = thisCentury - 100; // e.g. 1900
+
+                            if (datepicker.$connector.yearPart.value + thisCentury > thisYear + 20){
+                                datepicker.$connector.yearPart.value += lastCentury;
+                            }
+                            else{
+                                datepicker.$connector.yearPart.value += thisCentury;
+                            }
+                        }
+
                         return {
                             day: datepicker.$connector.dayPart.value,
                             month: datepicker.$connector.monthPart.value - 1,
