@@ -1,4 +1,4 @@
-window.alert("-- overridden! --");
+//window.alert("-- overridden! --");
 
 (function () {
     const tryCatchWrapper = function (callback) {
