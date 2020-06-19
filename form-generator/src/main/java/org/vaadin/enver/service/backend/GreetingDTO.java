@@ -14,21 +14,20 @@ import java.time.Instant;
 @EqualsAndHashCode(callSuper = false)
 @Slf4j
 public class GreetingDTO extends DTO{
-    private String hello;
-    private boolean helloEditable;
-    private boolean helloMandatory;
-    private boolean helloPermission;
+    String hello;
+    boolean helloEditable;
+    boolean helloMandatory;
+    boolean helloPermission;
 
-    private Instant time;
-    private boolean timeEditable = false;
-    private boolean timeMandatory = false;
-    private boolean timePermission = true;
+    Instant time;
+    boolean timeEditable = false;
+    boolean timeMandatory = false;
+    boolean timePermission = true;
 
-    private String secret;
-    private boolean secretEditable;
-    private boolean secretMandatory;
-    private boolean secretPermission;
-
+    String secret;
+    boolean secretEditable;
+    boolean secretMandatory;
+    boolean secretPermission;
 
     public void setTime(Instant time){
         this.time = time;

@@ -2,6 +2,10 @@ package org.vaadin.enver.service.backend;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
+import java.util.Date;
 
 import org.springframework.stereotype.Service;
 
@@ -20,12 +24,13 @@ public class GreetService implements Serializable {
 
         GreetingDTO bean = new GreetingDTO();
 
-        bean.setHello("Hallo Thoralf!");
-        bean.setHelloEditable(true);
-        bean.setHelloMandatory(true);
-        bean.setHelloPermission(true);
+        bean.hello = "Hallo Thoralf!";
+        bean.helloEditable = true;
+        bean.helloMandatory = true;
+        bean.helloPermission = true;
 
-        bean.setTime(Instant.now());
+        long myBirthday = LocalDate.of(1973, 3, 10).toEpochSecond(LocalTime.MIDNIGHT, ZoneOffset.UTC);
+        bean.time = Instant.ofEpochSecond(myBirthday);
         bean.setTimeEditable(false);
         bean.setTimeMandatory(true);
         bean.setTimePermission(true);

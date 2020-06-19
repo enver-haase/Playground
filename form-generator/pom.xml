@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.vaadin.enver</groupId>
     <artifactId>form-generator</artifactId>
-    <name>Starter</name>
+    <name>FormGenerator</name>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
@@ -181,6 +181,14 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                </configuration>
             </plugin>
         </plugins>
     </build>

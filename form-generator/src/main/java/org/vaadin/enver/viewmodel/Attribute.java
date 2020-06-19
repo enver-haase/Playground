@@ -1,8 +1,8 @@
 package org.vaadin.enver.viewmodel;
 
 import com.vaadin.flow.component.Component;
-import jdk.internal.joptsimple.internal.Strings;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 import org.vaadin.enver.viewmodel.field.FieldFactory;
 import org.vaadin.enver.viewmodel.field.ValueConsumer;
 import org.vaadin.enver.viewmodel.field.ValueProvider;
@@ -26,7 +26,7 @@ public final class Attribute<T>  {
         this.getter = getter;
         this.setter = setter;
 
-        assert( !Strings.isNullOrEmpty(name) && (!mandatory || value!=null) );
+        assert( !StringUtils.isEmpty(name) && (!mandatory || value!=null) );
     }
 
     public final String getName(){
