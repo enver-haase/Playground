@@ -1,0 +1,5 @@
+<module>
+    <!-- WS Compiler: manually edited -->
+    <inherits name="com.vaadin.mpr.MprWidgetSet"/>
+    <inherits name="com.infraleap.vaadin.scribble.WidgetSet"/>
+</module>
