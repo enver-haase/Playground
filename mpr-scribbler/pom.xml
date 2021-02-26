@@ -12,7 +12,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <vaadin.version>14.3.1</vaadin.version>
+        <vaadin.version>14.4.8</vaadin.version>
+        <vaadin8.version>8.12.3</vaadin8.version>
 
     </properties>
 
@@ -80,7 +81,7 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-server</artifactId>
-            <version>8.11.1</version>
+            <version>${vaadin8.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.jsoup</groupId>
@@ -95,7 +96,7 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-themes</artifactId>
-            <version>8.11.1</version>
+            <version>${vaadin8.version}</version>
         </dependency>
 
 
@@ -184,7 +185,7 @@
             <plugin>
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-maven-plugin</artifactId>
-                <version>8.11.1</version>
+                <version>${vaadin8.version}</version>
                 <executions>
                     <execution>
                         <goals>
