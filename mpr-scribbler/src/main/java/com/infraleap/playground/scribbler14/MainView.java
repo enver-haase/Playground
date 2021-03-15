@@ -1,7 +1,11 @@
 package com.infraleap.playground.scribbler14;
 
 import com.infraleap.vaadin.scribble.ScribblePane;
+import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.KeyModifier;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
@@ -43,15 +47,26 @@ public class MainView extends VerticalLayout implements HasLegacyComponents {
      */
     public MainView() {
 
+        // Use custom CSS classes to apply styling. This is defined in shared-styles.css.
+        addClassName("centered-content");
+
         // Use TextField for standard text input
         TextField textField = new TextField("Your name");
         textField.addThemeName("bordered");
 
-        // Use custom CSS classes to apply styling. This is defined in shared-styles.css.
-        addClassName("centered-content");
+        Runnable greeter = () -> {
+            Notification.show("Hello "+(textField.getValue().isEmpty()?"anonymous user":textField.getValue()), 5000, Notification.Position.BOTTOM_CENTER);
+        };
+
+        textField.addKeyDownListener(Key.ENTER,  e->{
+            greeter.run();
+        });
         add(textField);
 
-
+        Button sayNameButton = new Button("Greet!", e -> {
+            greeter.run();
+        });
+        add(sayNameButton);
 
         com.vaadin.ui.VerticalLayout layout = new com.vaadin.ui.VerticalLayout();
         // Initialize our new UI scribblePane
