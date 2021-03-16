@@ -4,6 +4,7 @@ import '@vaadin/vaadin-button';
 import '@vaadin/vaadin-text-field';
 import { customElement, html } from 'lit-element';
 import { View } from '../../views/view';
+import * as loggingEndpoint from '../../generated/LoggingEndpoint'
 
 @customElement('hello-fusion-view')
 export class HelloFusionView extends View {
@@ -20,6 +21,12 @@ export class HelloFusionView extends View {
   }
 
   sayHello() {
-    showNotification(`Hello ${this.name}`);
+    let message = `Hello ${this.name}`
+    showNotification(message);
+    this.log(message);
+  }
+
+  async log(greeting : string){
+    await loggingEndpoint.log(greeting)
   }
 }
