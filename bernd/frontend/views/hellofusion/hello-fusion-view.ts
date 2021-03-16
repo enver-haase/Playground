@@ -26,7 +26,7 @@ export class HelloFusionView extends View {
     this.log(message);
   }
 
-  async log(greeting : string){
-    await loggingEndpoint.log(greeting)
+  log(greeting : string){
+    loggingEndpoint.log(greeting).then()
   }
 }
