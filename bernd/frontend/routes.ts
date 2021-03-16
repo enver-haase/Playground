@@ -18,6 +18,16 @@ export const views: ViewRoute[] = [
       await import('./views/hellofusion/hello-fusion-view');
     },
   },
+  {
+    path: 'hello-flow',
+    title: 'Hello Flow',
+    children: []
+  },
+  {
+    path: 'hello-flowhtml',
+    title: 'Hello Flow w/HTML',
+    children: []
+  }
 ];
 export const routes: ViewRoute[] = [
   {
