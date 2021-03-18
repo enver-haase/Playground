@@ -32,6 +32,8 @@ public class HelloWorldView extends HorizontalLayout {
             Notification.show("Hello " + name.getValue());
         });
 
+        sayHello.addClassName("color-by-width");
+
         Page page = UI.getCurrent().getPage();
         page.addBrowserWindowResizeListener(
                 event -> {
