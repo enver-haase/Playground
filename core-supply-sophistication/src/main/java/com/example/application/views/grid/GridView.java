@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+import com.vaadin.flow.data.renderer.TemplateRenderer;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -75,6 +76,7 @@ public class GridView extends Div {
         createClientColumn();
         createAmountColumn();
         createStatusColumn();
+        createStatus2Column();
         createDateColumn();
     }
 
@@ -110,7 +112,11 @@ public class GridView extends Div {
             span.getElement().setAttribute("theme", "badge " + client.getStatus().toLowerCase());
             return span;
         })).select((item, newValue) -> item.setStatus(newValue), Arrays.asList("Pending", "Success", "Error"))
-                .setComparator(client -> client.getStatus()).setHeader("Status");
+                .setComparator(client -> client.getStatus()).setHeader("Status as a Component");
+    }
+
+    private void createStatus2Column(){
+        statusColumn = grid.addColumn(TemplateRenderer.<Client>of("<b>[[item.mystatus]]</b>").withProperty("mystatus", Client::getStatus)).setHeader("Status in HTML");
     }
 
     private void createDateColumn() {
