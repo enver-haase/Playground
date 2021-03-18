@@ -18,6 +18,8 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.PageTitle;
 import com.example.application.views.main.MainView;
 
+import java.util.List;
+
 @CssImport("./views/layouting/layouting-view.css")
 @Route(value = "layouting", layout = MainView.class)
 @PageTitle("Layouting")
@@ -65,7 +67,26 @@ public class LayoutingView extends Div {
         country.setItems("Country 1", "Country 2", "Country 3");
         state.setItems("State A", "State B", "State C", "State D");
         formLayout.add(postalCode, city, state, country);
+
+        formLayout.setColspan(country, 3);
+
+        dumpResponsiveSteps(formLayout);
+
+        formLayout.setResponsiveSteps(  new FormLayout.ResponsiveStep("1px", 1),
+                                        new FormLayout.ResponsiveStep("400px", 2),
+                                        new FormLayout.ResponsiveStep("800px", 3));
+
+        dumpResponsiveSteps(formLayout);
+
         return formLayout;
+    }
+
+    private static void dumpResponsiveSteps(FormLayout formLayout){
+        List<FormLayout.ResponsiveStep> steps = formLayout.getResponsiveSteps();
+        for (Object step : steps){
+            System.err.println(step.toString() + " : " + step.getClass().getCanonicalName());
+        }
+        System.err.println(steps.size() + " responsive steps defined.");
     }
 
     private Component createButtonLayout() {

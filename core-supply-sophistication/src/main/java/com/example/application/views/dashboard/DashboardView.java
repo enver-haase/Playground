@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.board.Board;
+import com.vaadin.flow.component.board.Row;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.charts.model.Configuration;
@@ -42,9 +43,13 @@ public class DashboardView extends Div {
     public DashboardView() {
         addClassName("dashboard-view");
         Board board = new Board();
-        board.addRow(createBadge("Users", usersH2, "primary-text", "Current users in the app", "badge"),
-                createBadge("Events", eventsH2, "success-text", "Events from the views", "badge success"),
-                createBadge("Conversion", conversionH2, "error-text", "User conversion rate", "badge error"));
+
+        WrapperCard users = createBadge("Users", usersH2, "primary-text", "Current users in the app", "badge");
+        WrapperCard events = createBadge("Events", eventsH2, "success-text", "Events from the views", "badge success");
+        WrapperCard conversion = createBadge("Conversion", conversionH2, "error-text", "User conversion rate", "badge error");
+
+        Row firstRow = board.addRow(users, events, conversion);
+        firstRow.setComponentSpan(users, 2);
 
         monthlyVisitors.getConfiguration().setTitle("Monthly visitors per city");
         monthlyVisitors.getConfiguration().getChart().setType(ChartType.COLUMN);
