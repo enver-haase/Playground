@@ -90,6 +90,7 @@ public class GridView extends Div {
         createAmountColumn();
         createStatusColumn();
         createStatus2Column();
+        createStatus3Column();
         createDateColumn();
     }
 
@@ -129,10 +130,22 @@ public class GridView extends Div {
     }
 
     private void createStatus2Column(){
-        statusColumn = grid.addColumn(TemplateRenderer.<Client>of("<b on-click='myclicked'>[[item.mystatus]]</b>")
+        grid.addColumn(TemplateRenderer.<Client>of("<b on-click='myclicked'>[[item.mystatus]]</b>")
                 .withProperty("mystatus", Client::getStatus)
                 .withEventHandler("myclicked", item -> Notification.show(item.getStatus())))
                 .setHeader("Status in HTML");
+    }
+
+    private void createStatus3Column(){
+        grid.addColumn(TemplateRenderer.<Client>of(
+                "<template is=\"dom-if\" if=\"[[item.isValidConfig]]\">" +
+                "<span style=\"background-color: green\">VALID</span>" +
+                "</template>" +
+                "<template is=\"dom-if\" if=\"[[!item.isValidConfig]]\">" +
+                "<span style=\"background-color: red\">INVALID</span>" +
+                "</template>")
+                .withProperty("isValidConfig", item -> !item.getStatus().equals("Error")))
+                .setHeader("Conditional Status in HTML");
     }
 
     private void createDateColumn() {
