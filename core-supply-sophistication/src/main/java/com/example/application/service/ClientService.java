@@ -34,7 +34,7 @@ public class ClientService {
         final int offset = query.getOffset();
         final int limit = query.getLimit();
 
-        Stream<Client> stream = Stream.iterate( createClient(offset), client -> client.getId() < NUM_ENTRIES, item -> createClient(item.getId()+1) );
+        Stream<Client> stream = Stream.iterate( fetchClient(offset), client -> client.getId() < NUM_ENTRIES, item -> fetchClient(item.getId()+1) );
         if (query.getFilter().isPresent()){
             stream = stream.filter(query.getFilter().get());
         }
@@ -44,9 +44,9 @@ public class ClientService {
 
 
     // We have have a generational approach here as we do not have a real DB
-    private Client createClient(int id) {
+    private Client fetchClient(int id) {
 
-        System.out.println("Creating client "+id);
+        System.out.println("Fetching client "+id);
 
         Client c = new Client();
         c.setId(id);
