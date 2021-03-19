@@ -1,21 +1,17 @@
-package com.example.application.views.grid;
+package com.example.application.data.entity;
 
+import javax.persistence.Entity;
+
+@Entity
 public class Client {
 
-    private int id;
     private String img;
     private String client;
     private double amount;
     private String status;
     private String date;
+    private Integer id;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getImg() {
         return img;
@@ -55,5 +51,14 @@ public class Client {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    @javax.persistence.Id
+    public Integer getId() {
+        return id;
     }
 }
