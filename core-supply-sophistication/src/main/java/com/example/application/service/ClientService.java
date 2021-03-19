@@ -3,6 +3,8 @@ package com.example.application.service;
 import com.example.application.data.entity.Client;
 import com.example.application.views.grid.GridView;
 import com.vaadin.flow.data.provider.Query;
+import com.vaadin.flow.data.provider.QuerySortOrder;
+import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.function.SerializablePredicate;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +19,8 @@ public class ClientService {
 
     public int size(Query<Client, SerializablePredicate<Client>> query){
         if (query.getFilter().isPresent()) {
-            GridView.MyFilterValueHolder myFilterValueHolder = (GridView.MyFilterValueHolder) query.getFilter().get();
-            if (myFilterValueHolder.isEffective()) {
+            GridView.MyStatefulFilter myStatefulFilter = (GridView.MyStatefulFilter) query.getFilter().get();
+            if (myStatefulFilter.isEffective()) {
                 return Math.toIntExact(fetch(query).count());
             }
             else {
@@ -34,7 +36,18 @@ public class ClientService {
         final int offset = query.getOffset();
         final int limit = query.getLimit();
 
-        Stream<Client> stream = Stream.iterate( fetchClient(offset), client -> client.getId() < NUM_ENTRIES, item -> fetchClient(item.getId()+1) );
+        Stream<Client> stream = Stream.iterate(fetchClient(offset), client -> client.getId() < NUM_ENTRIES, item -> fetchClient(item.getId() + 1));
+
+        // An example for sorting by ID
+        if (!query.getSortOrders().isEmpty()) {
+            for (QuerySortOrder sortOrder : query.getSortOrders()){
+                if (sortOrder.getSorted().equalsIgnoreCase("id") && sortOrder.getDirection().compareTo(SortDirection.DESCENDING )== 0){
+                    stream = Stream.iterate(fetchClient(NUM_ENTRIES-offset-1), client -> client.getId() >= 0, item -> fetchClient(item.getId() - 1));
+                }
+            }
+        }
+
+
         if (query.getFilter().isPresent()){
             stream = stream.filter(query.getFilter().get());
         }

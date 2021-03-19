@@ -39,7 +39,7 @@ import com.example.application.views.main.MainView;
 @PageTitle("Grid")
 public class GridView extends Div {
 
-    public class MyFilterValueHolder implements SerializablePredicate<Client> {
+    public class MyStatefulFilter implements SerializablePredicate<Client> {
         private String idFilter;
         private String clientNameFilter;
         private String amountFilter;
@@ -80,7 +80,7 @@ public class GridView extends Div {
         }
     }
 
-    final MyFilterValueHolder myFilterValueHolder = new MyFilterValueHolder();
+    final MyStatefulFilter myStatefulFilter = new MyStatefulFilter();
 
     private GridPro<Client> grid;
 
@@ -114,7 +114,7 @@ public class GridView extends Div {
 
         //dataProvider = new ListDataProvider<>(getClients());
         ConfigurableFilterDataProvider<Client, Void, SerializablePredicate<Client>> dataProvider = DataProvider.fromFilteringCallbacks(clientService::fetch, clientService::size).withConfigurableFilter();
-        dataProvider.setFilter(this.myFilterValueHolder);
+        dataProvider.setFilter(this.myStatefulFilter);
         grid.setDataProvider(dataProvider);
     }
 
@@ -143,7 +143,7 @@ public class GridView extends Div {
             span.setText(client.getClient());
             hl.add(img, span);
             return hl;
-        })).setComparator(client -> client.getClient()).setHeader("Client");
+        }))/*.setComparator(client -> client.getClient()) */.setHeader("Client");
     }
 
     private void createAmountColumn() {
@@ -151,7 +151,7 @@ public class GridView extends Div {
                 .addEditColumn(Client::getAmount,
                         new NumberRenderer<>(client -> client.getAmount(), NumberFormat.getCurrencyInstance(Locale.US)))
                 .text((item, newValue) -> item.setAmount(Double.parseDouble(newValue)))
-                .setComparator(client -> client.getAmount()).setHeader("Amount");
+                /*.setComparator(client -> client.getAmount())*/.setHeader("Amount");
     }
 
     private void createStatusColumn() {
@@ -161,7 +161,7 @@ public class GridView extends Div {
             span.getElement().setAttribute("theme", "badge " + client.getStatus().toLowerCase());
             return span;
         })).select((item, newValue) -> item.setStatus(newValue), Arrays.asList("Pending", "Success", "Error"))
-                .setComparator(client -> client.getStatus()).setHeader("Status as a Component");
+                /*.setComparator(client -> client.getStatus())*/.setHeader("Status as a Component");
     }
 
     private void createStatus2Column() {
@@ -187,7 +187,7 @@ public class GridView extends Div {
         grid
                 .addColumn(new LocalDateRenderer<>(client -> LocalDate.parse(client.getDate()),
                         DateTimeFormatter.ofPattern("M/d/yyyy")))
-                .setComparator(Client::getDate).setHeader("Date").setWidth("180px").setFlexGrow(0);
+                /*.setComparator(Client::getDate)*/.setHeader("Date").setWidth("180px").setFlexGrow(0);
     }
 
     private void addFiltersToGrid() {
@@ -201,7 +201,7 @@ public class GridView extends Div {
         //idFilter.addValueChangeListener(event -> dataProvider.addFilter(
         //        client -> StringUtils.containsIgnoreCase(Integer.toString(client.getId()), idFilter.getValue())));
         idFilter.addValueChangeListener(event -> {
-            myFilterValueHolder.idFilter = idFilter.getValue();
+            myStatefulFilter.idFilter = idFilter.getValue();
             grid.getDataProvider().refreshAll();
         });
         filterRow.getCell(idColumn).setComponent(idFilter);
@@ -214,7 +214,7 @@ public class GridView extends Div {
         //clientFilter.addValueChangeListener(event -> dataProvider
         //        .addFilter(client -> StringUtils.containsIgnoreCase(client.getClient(), clientFilter.getValue())));
         clientFilter.addValueChangeListener(event -> {
-            myFilterValueHolder.clientNameFilter = clientFilter.getValue();
+            myStatefulFilter.clientNameFilter = clientFilter.getValue();
             grid.getDataProvider().refreshAll();
         });
         filterRow.getCell(clientColumn).setComponent(clientFilter);
@@ -227,7 +227,7 @@ public class GridView extends Div {
         //amountFilter.addValueChangeListener(event -> dataProvider.addFilter(client -> StringUtils
         //        .containsIgnoreCase(Double.toString(client.getAmount()), amountFilter.getValue())));
         amountFilter.addValueChangeListener(event -> {
-            myFilterValueHolder.amountFilter = amountFilter.getValue();
+            myStatefulFilter.amountFilter = amountFilter.getValue();
             grid.getDataProvider().refreshAll();
         });
         filterRow.getCell(amountColumn).setComponent(amountFilter);
@@ -240,7 +240,7 @@ public class GridView extends Div {
         //statusFilter.addValueChangeListener(
         //        event -> dataProvider.addFilter(client -> areStatusesEqual(client, statusFilter)));
         statusFilter.addValueChangeListener(event -> {
-            myFilterValueHolder.statusFIlter = statusFilter.getValue();
+            myStatefulFilter.statusFIlter = statusFilter.getValue();
             grid.getDataProvider().refreshAll();
         });
         filterRow.getCell(statusColumn).setComponent(statusFilter);
