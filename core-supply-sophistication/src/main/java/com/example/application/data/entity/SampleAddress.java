@@ -4,6 +4,8 @@ import javax.persistence.Entity;
 
 import com.example.application.data.AbstractEntity;
 
+import java.math.BigDecimal;
+
 @Entity
 public class SampleAddress extends AbstractEntity {
 
@@ -12,6 +14,9 @@ public class SampleAddress extends AbstractEntity {
     private String city;
     private String state;
     private String country;
+    private BigDecimal amount;
+    private BigDecimal fine;
+    private String period;
 
     public String getStreet() {
         return street;
@@ -43,5 +48,14 @@ public class SampleAddress extends AbstractEntity {
     public void setCountry(String country) {
         this.country = country;
     }
-
+    public BigDecimal getAmount(){ return amount; }
+    public void setAmount(BigDecimal amount) { this.amount = amount; }
+    public BigDecimal getFine() { return this.fine; }
+    public void setFine(BigDecimal fine) { this.fine = fine; }
+    public void setPeriod(String period){
+        this.period = period;
+    }
+    public String getPeriod(){
+        return this.period;
+    }
 }
