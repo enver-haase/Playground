@@ -34,8 +34,6 @@ public class ClientService {
         final int offset = query.getOffset();
         final int limit = query.getLimit();
 
-        //return Stream.iterate( createClient(offset), item -> createClient(item.getId()+1)).limit(limit).filter(query.getFilter().get());
-
         Stream<Client> stream = Stream.iterate( createClient(offset), client -> client.getId() < NUM_ENTRIES, item -> createClient(item.getId()+1) );
         if (query.getFilter().isPresent()){
             stream = stream.filter(query.getFilter().get());
