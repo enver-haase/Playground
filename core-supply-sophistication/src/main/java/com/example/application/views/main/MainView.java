@@ -91,7 +91,8 @@ public class MainView extends AppLayout {
     }
 
     private Component[] createMenuItems() {
-        return new Tab[]{createTab("Hello World", HelloWorldView.class), createTab("Styling", StylingView.class),
+        return new Tab[]{createTab("Hello World", HelloWorldView.class),
+                //createTab("Styling", StylingView.class),
                 createTab("Layouting", LayoutingView.class), createTab("Grid", GridView.class),
                 createTab("Route_A", Route_AView.class), createTab("Route_B", Route_BView.class),
                 createTab("Dashboard", DashboardView.class), createTab("Card List", CardListView.class),
@@ -109,7 +110,7 @@ public class MainView extends AppLayout {
     protected void afterNavigation() {
         super.afterNavigation();
         getTabForComponent(getContent()).ifPresent(menu::setSelectedTab);
-        viewTitle.setText(getCurrentPageTitle());
+        viewTitle.setText(getCurrentPageTitle()+"@"+System.identityHashCode(this));
     }
 
     private Optional<Tab> getTabForComponent(Component component) {

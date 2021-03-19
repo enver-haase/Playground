@@ -8,7 +8,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.example.application.views.main.MainView;
 
 @CssImport("./views/styling/styling-view.css")
-@Route(value = "Styling", layout = MainView.class)
+//@Route(value = "Styling", layout = MainView.class)
 @PageTitle("Styling")
 public class StylingView extends Div {
 
