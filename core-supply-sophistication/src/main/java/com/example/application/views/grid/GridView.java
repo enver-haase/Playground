@@ -7,6 +7,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+import com.example.application.service.ClientService;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
 import org.apache.commons.lang3.StringUtils;
 
@@ -48,7 +51,11 @@ public class GridView extends Div {
     private Grid.Column<Client> statusColumn;
     private Grid.Column<Client> dateColumn;
 
-    public GridView() {
+    private final ClientService clientService;
+
+    public GridView(ClientService clientService) {
+        this.clientService = clientService;
+
         addClassName("grid-view");
         setSizeFull();
         createGrid();
@@ -67,9 +74,15 @@ public class GridView extends Div {
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_COLUMN_BORDERS);
         grid.setHeight("100%");
 
-        dataProvider = new ListDataProvider<>(getClients());
+        //dataProvider = new ListDataProvider<>(getClients());
+        dataProvider = createDataProvider();
         grid.setDataProvider(dataProvider);
     }
+
+    private ListDataProvider<Client> createDataProvider(){
+        return new ListDataProvider<>(getClients());
+    }
+
 
     private void addColumnsToGrid() {
         createIdColumn();
@@ -116,7 +129,10 @@ public class GridView extends Div {
     }
 
     private void createStatus2Column(){
-        statusColumn = grid.addColumn(TemplateRenderer.<Client>of("<b>[[item.mystatus]]</b>").withProperty("mystatus", Client::getStatus)).setHeader("Status in HTML");
+        statusColumn = grid.addColumn(TemplateRenderer.<Client>of("<b on-click='myclicked'>[[item.mystatus]]</b>")
+                .withProperty("mystatus", Client::getStatus)
+                .withEventHandler("myclicked", item -> Notification.show(item.getStatus())))
+                .setHeader("Status in HTML");
     }
 
     private void createDateColumn() {
