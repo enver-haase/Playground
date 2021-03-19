@@ -110,7 +110,7 @@ public class MainView extends AppLayout {
     protected void afterNavigation() {
         super.afterNavigation();
         getTabForComponent(getContent()).ifPresent(menu::setSelectedTab);
-        viewTitle.setText(getCurrentPageTitle()+"@"+System.identityHashCode(this));
+        viewTitle.setText(getCurrentPageTitle()+"@"+System.identityHashCode(this)+"/"+System.identityHashCode(this.getContent())) ;
     }
 
     private Optional<Tab> getTabForComponent(Component component) {
