@@ -2,27 +2,27 @@ package com.example.application.views.layouting;
 
 import com.example.application.data.entity.SampleAddress;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.*;
 import com.vaadin.flow.data.converter.Converter;
-import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.*;
 import com.example.application.views.main.MainView;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @CssImport("./views/layouting/layouting-view.css")
 @Route(value = "layouting", layout = MainView.class)
 @PageTitle("Layouting")
-public class LayoutingView extends Div {
+public class LayoutingView extends Div implements HasUrlParameter<String> {
 
     private TextField street = new TextField("Street address");
     private TextField postalCode = new TextField("Postal code");
@@ -135,5 +135,12 @@ public class LayoutingView extends Div {
     }
 
 
-
+    @Override
+    public void setParameter(BeforeEvent event, @OptionalParameter String parameter) {
+        if (parameter != null){
+            Notification.show("Parameter: "+parameter);
+        }
+        Map<String, List<String>> params = event.getLocation().getQueryParameters().getParameters();
+        Notification.show(params.toString());
+    }
 }
