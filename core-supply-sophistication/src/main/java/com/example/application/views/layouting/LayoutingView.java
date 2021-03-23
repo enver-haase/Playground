@@ -12,6 +12,7 @@ import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.*;
 import com.vaadin.flow.data.converter.Converter;
+import com.vaadin.flow.data.validator.EmailValidator;
 import com.vaadin.flow.router.*;
 import com.example.application.views.main.MainView;
 
@@ -22,20 +23,21 @@ import java.util.Map;
 @CssImport("./views/layouting/layouting-view.css")
 @Route(value = "layouting", layout = MainView.class)
 @PageTitle("Layouting")
-public class LayoutingView extends Div implements HasUrlParameter<String> {
+public class LayoutingView extends Div implements HasUrlParameter<String>, BeforeEnterObserver{
 
     private TextField street = new TextField("Street address");
     private TextField postalCode = new TextField("Postal code");
     private TextField city = new TextField("City");
     private ComboBox<String> state = new ComboBox<>("State");
     private ComboBox<String> country = new ComboBox<>("Country");
+    private TextField emailField = new TextField("eMail");
 
     private MyBigDecimalField amount = new MyBigDecimalField(2, "Amount");
     private NumberField wrongNameForAutoBind_fine = new NumberField("Fine");
 
     private TextField wrongNameForAutoBind_period = new TextField("Period");
 
-    private Binder<SampleAddress> binder = new Binder<>(SampleAddress.class);
+    private BeanValidationBinder<SampleAddress> binder = new BeanValidationBinder<>(SampleAddress.class);
 
     public LayoutingView(SampleAddress sampleAddress) {
         addClassName("layouting-view");
@@ -63,9 +65,18 @@ public class LayoutingView extends Div implements HasUrlParameter<String> {
 
         formLayout.setColspan(country, 3);
 
+
+        emailField.setRequired(true);
+        binder.forField(emailField)
+                .withValidator(new EmailValidator("Email address syntactically incorrect"))
+                .bind("email");
+
+        formLayout.add(emailField);
+
         formLayout.add(amount);
 
-        binder.forField(wrongNameForAutoBind_fine).withConverter(
+        binder.forField(wrongNameForAutoBind_fine)
+                .withConverter(
                 new Converter<Double, BigDecimal>() {
                     @Override
                     public Result<BigDecimal> convertToModel(Double value, ValueContext context) {
@@ -111,6 +122,8 @@ public class LayoutingView extends Div implements HasUrlParameter<String> {
         formLayout.add(wrongNameForAutoBind_period);
 
 
+
+
         makeResponsive(formLayout);
 
         return formLayout;
@@ -142,5 +155,12 @@ public class LayoutingView extends Div implements HasUrlParameter<String> {
         }
         Map<String, List<String>> params = event.getLocation().getQueryParameters().getParameters();
         Notification.show(params.toString());
+    }
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+        //SampleAddress sa = new SampleAddress();
+        //sa.setCity("Berlin");
+       // binder.readBean(sa);
     }
 }
