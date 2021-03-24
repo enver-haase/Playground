@@ -130,7 +130,7 @@ public class GridView extends Div {
     }
 
     private void createIdColumn() {
-        idColumn = grid.addColumn(Client::getId, "id").setHeader("ID").setWidth("120px").setFlexGrow(0);
+        idColumn = grid.addColumn(Client::getId, "id").setHeader("ID").setWidth("120px").setFlexGrow(0).setFrozen(true);
     }
 
     private void createClientColumn() {
@@ -143,7 +143,7 @@ public class GridView extends Div {
             span.setText(client.getClient());
             hl.add(img, span);
             return hl;
-        }))/*.setComparator(client -> client.getClient()) */.setHeader("Client");
+        }))/*.setComparator(client -> client.getClient()) */.setHeader("Client").setFrozen(true);
     }
 
     private void createAmountColumn() {

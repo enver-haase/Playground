@@ -15,6 +15,7 @@ import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.data.validator.EmailValidator;
 import com.vaadin.flow.router.*;
 import com.example.application.views.main.MainView;
+import com.vaadin.flow.spring.annotation.EnableVaadin;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.Map;
 
 @CssImport("./views/layouting/layouting-view.css")
 @Route(value = "layouting", layout = MainView.class)
+@RouteAlias(value = "foobar")
 @PageTitle("Layouting")
 public class LayoutingView extends Div implements HasUrlParameter<String>, BeforeEnterObserver{
 

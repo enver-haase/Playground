@@ -47,7 +47,7 @@ public class HelloWorldView extends HorizontalLayout implements Animated {
             //noinspection unchecked
             RouteConfiguration.forSessionScope().setRoute("styling", StylingView.class, MainView.class);
         }));
-        add(new Button("Disable 'styling' Route", event -> RouteConfiguration.forSessionScope().removeRoute("styling")));
+        add(new Button("Disable 'styling' Route", event -> RouteConfiguration.forApplicationScope().removeRoute("hello")));
 
 
         sayHello.addClassName("color-by-width");
