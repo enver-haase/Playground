@@ -1,0 +1,11 @@
+    html {
+      --lumo-primary-color: hsl(214, 83%, 61%);
+      --lumo-primary-text-color: hsl(214, 75%, 40%);
+      --lumo-font-family: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
+
+    }
+
+    [theme~="dark"] {
+      --lumo-base-color: hsl(214, 36%, 25%);
+
+    }
