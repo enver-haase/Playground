@@ -13,15 +13,21 @@ export class AppStore {
     makeAutoObservable(this);
   }
 
-  setLocation(location: RouterLocation) {
-    if (location.route) {
+  setLocation(location: RouterLocation, serverSideRoute: boolean) {
+    if (location.route && !serverSideRoute) {
       this.location = location.route.path;
     } else if (location.pathname.startsWith(location.baseUrl)) {
       this.location = location.pathname.substr(location.baseUrl.length);
     } else {
       this.location = location.pathname;
     }
-    this.currentViewTitle = (location?.route as any)?.title || '';
+    const route = location?.route as any;
+
+    if (serverSideRoute) {
+      this.currentViewTitle = document.title;
+    } else {
+      this.currentViewTitle = route?.title || '';
+    }
   }
 }
 export const appStore = new AppStore();
