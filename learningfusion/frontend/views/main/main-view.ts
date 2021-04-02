@@ -94,6 +94,11 @@ export class MainView extends Layout {
         path: 'master-detail-flow',
         title: 'Master-Detail-Flow',
       },
+
+      {
+        path: 'loan-flow',
+        title: 'Loan-Flow',
+      },
     ];
 
     return views.filter((route) => route.title) as RouteInfo[];
