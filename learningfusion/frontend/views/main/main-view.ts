@@ -96,6 +96,11 @@ export class MainView extends Layout {
       },
 
       {
+        path: 'loan-fusion',
+        title: 'Loan-Fusion',
+      },
+
+      {
         path: 'loan-flow',
         title: 'Loan-Flow',
       },

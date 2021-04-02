@@ -37,6 +37,14 @@ export const views: ViewRoute[] = [
       await import('./views/masterdetailfusion/master-detail-fusion-view');
     },
   },
+  {
+    path: 'loan-fusion',
+    component: 'loan-fusion-view',
+    title: 'Loan-Fusion',
+    action: async () => {
+      await import('./views/loanfusion/loan-fusion-view');
+    },
+  },
 ];
 export const routes: ViewRoute[] = [
   {
