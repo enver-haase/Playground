@@ -14,7 +14,7 @@ export const views: ViewRoute[] = [
   {
     path: '',
     component: 'hello-world-fusion-view',
-    title: '',
+    title: 'Hello-World-Fusion',
   },
   {
     path: 'hello-world-fusion',
