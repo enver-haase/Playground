@@ -1,6 +1,10 @@
 import '!style-loader!css-loader!./loan-fusion-view.css';
 import {customElement, html, TemplateResult} from 'lit-element';
 import { View } from '../../views/view';
+import '@vaadin/vaadin-ordered-layout/vaadin-vertical-layout';
+import '@vaadin/vaadin-form-layout';
+import '@vaadin/vaadin-text-field/vaadin-number-field';
+import {FormLayoutResponsiveStep} from "@vaadin/vaadin-form-layout/@types/interfaces";
 
 @customElement('loan-fusion-view')
 export class LoanFusionView extends View {
@@ -8,10 +12,15 @@ export class LoanFusionView extends View {
   rate : number = 0.0;
   interest : number = 0.0;
 
+  responsiveSteps: FormLayoutResponsiveStep[] = [
+    { minWidth: 0, columns: 1 },
+    { minWidth: '20em', columns: 2 },
+  ];
+
   render() {
     return html`
       <vaadin-vertical-layout class="loan-fusion-view" theme="padding spacing" style="width: 100%;">
-        <vaadin-form-layout>
+        <vaadin-form-layout .responsiveSteps=${this.responsiveSteps}>
           <vaadin-number-field @value-changed="${this.loanChanged}" value="60247.99" min="0.01" label="Kreditsumme" style="width: calc(99.9% - 0rem); margin-left: 0; margin-right: 0;"></vaadin-number-field>
           <vaadin-number-field @value-changed="${this.rateChanged}" value="1242.50" min="0.01" label="Monatliche Rate" style="width: calc(99.9% - 0rem); margin-left: 0; margin-right: 0;"></vaadin-number-field>
           <vaadin-number-field @value-changed="${this.interestChanged}" value="1.15" min="0" max="100" label="J&auml;hrlicher Zins in %" style="width: calc(99.9% - 0rem); margin-left: 0; margin-right: 0;"></vaadin-number-field>
@@ -52,12 +61,12 @@ export class LoanFusionView extends View {
 
       // TODO: form layout should have two columns?
       //       entries that span two lines are not vertically aligned.
-      lines.push( html`<vaadin-formlayout>
+      lines.push( html`<vaadin-form-layout .responsiveSteps=${this.responsiveSteps}>
             <label style="width: calc(99.9% + 0rem); margin-left: 0px; margin-right: 0px;">${month}</label>
             <label style="width: calc(99.9% + 0rem); margin-left: 0px; margin-right: 0px;">${loan}</label>
             <label style="width: calc(99.9% + 0rem); margin-left: 0px; margin-right: 0px;">${interestAmount}</label>
             <label style="width: calc(99.9% + 0rem); margin-left: 0px; margin-right: 0px;">${repaymentAmount}</label>
-          </vaadin-formlayout>` );
+          </vaadin-form-layout>` );
 
       loan -= repaymentAmount;
       month++;
