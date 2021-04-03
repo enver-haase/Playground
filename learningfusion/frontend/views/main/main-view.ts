@@ -66,6 +66,11 @@ export class MainView extends Layout {
   private getMenuRoutes(): RouteInfo[] {
     return [
       {
+        path: 'mine-sweeper',
+        title: 'Mine Sweeper',
+      },
+
+      {
         path: 'hello-world-fusion',
         title: 'Hello-World-Fusion',
       },

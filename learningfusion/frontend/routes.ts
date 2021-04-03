@@ -13,8 +13,11 @@ export const views: ViewRoute[] = [
   // for client-side, place routes below (more info https://vaadin.com/docs/v19/flow/typescript/creating-routes.html)
   {
     path: '',
-    component: 'hello-world-fusion-view',
-    title: 'Hello-World-Fusion',
+    component: 'mine-sweeper-view',
+    title: 'Mine Sweeper',
+    action: async () => {
+      await import('./views/minesweeper/mine-sweeper-view');
+    },
   },
   {
     path: 'hello-world-fusion',
@@ -43,6 +46,14 @@ export const views: ViewRoute[] = [
     title: 'Loan-Fusion',
     action: async () => {
       await import('./views/loanfusion/loan-fusion-view');
+    },
+  },
+  {
+    path: 'mine-sweeper',
+    component: 'mine-sweeper-view',
+    title: 'Mine Sweeper',
+    action: async () => {
+      await import('./views/minesweeper/mine-sweeper-view');
     },
   },
 ];
