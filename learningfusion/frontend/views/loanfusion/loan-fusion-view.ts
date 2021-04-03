@@ -24,7 +24,6 @@ export class LoanFusionView extends View {
           <vaadin-number-field @value-changed="${this.loanChanged}" value="60247.99" min="0.01" label="Kreditsumme" style="width: calc(99.9% - 0rem); margin-left: 0; margin-right: 0;"></vaadin-number-field>
           <vaadin-number-field @value-changed="${this.rateChanged}" value="1242.50" min="0.01" label="Monatliche Rate" style="width: calc(99.9% - 0rem); margin-left: 0; margin-right: 0;"></vaadin-number-field>
           <vaadin-number-field @value-changed="${this.interestChanged}" value="1.15" min="0" max="100" label="J&auml;hrlicher Zins in %" style="width: calc(99.9% - 0rem); margin-left: 0; margin-right: 0;"></vaadin-number-field>
-          <style>#styleElement { word-spacing: 40em; }</style>
         </vaadin-form-layout>
         ${this.recalculate()}
       </vaadin-vertical-layout>
