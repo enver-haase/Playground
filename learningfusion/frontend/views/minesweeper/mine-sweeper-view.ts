@@ -61,11 +61,15 @@ export class MineSweeperView extends View {
       cols = [];
       for(let c=0; c<this.cols; c++){
         // style="min-width: 42px; width: 42px; height: 42px;"
-        cols.push( html`<vaadin-button>${this.playfield.hasBomb(c, r)}</vaadin-button>` );
+        cols.push( html`<vaadin-button @click="${this.squareClicked}">${this.playfield.hasBomb(c, r)}</vaadin-button>` );
       }
       lines.push( html`<vaadin-horizontal-layout>${cols}</vaadin-horizontal-layout>` );
     }
 
     return html`${lines}`;
+  }
+
+  squareClicked(){
+
   }
 }
