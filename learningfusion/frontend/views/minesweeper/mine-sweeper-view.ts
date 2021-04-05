@@ -61,7 +61,7 @@ export class MineSweeperView extends View {
       cols = [];
       for(let c=0; c<this.cols; c++){
         // style="min-width: 42px; width: 42px; height: 42px;"
-        cols.push( html`<vaadin-button @click="${this.squareClicked}">${this.playfield.hasBomb(c, r)}</vaadin-button>` );
+        cols.push( html`<vaadin-button @click="${() => this.squareClicked(c, r)}">${this.squareText(c, r)}</vaadin-button>` );
       }
       lines.push( html`<vaadin-horizontal-layout>${cols}</vaadin-horizontal-layout>` );
     }
@@ -69,7 +69,23 @@ export class MineSweeperView extends View {
     return html`${lines}`;
   }
 
-  squareClicked(){
-
+  squareClicked(col : number, row: number){
+    this.playfield.reveal(col, row);
   }
+
+  squareText(col: number, row: number){
+    if (this.playfield.isRevealed(col, row)){
+      return ""
+    }
+    else {
+      var toShow : number | null = this.playfield.reveal(col, row);
+      if (toShow === null){
+        return "BOMB"
+      }
+      else {
+        return toShow;
+      }
+    }
+  }
+
 }

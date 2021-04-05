@@ -1,23 +1,37 @@
 export class MineSweeperPlayfield{
 
-    squares : boolean[][];
+    bombs : boolean[][];
+    revealed : boolean[][];
 
     constructor(cols : number, rows : number){
-        this.squares = [];
+        this.bombs = [];
+        this.revealed = [];
         for (var row: number = 0; row < rows; row++) {
-            var colToBuild : boolean[] = [];
+            var bombsColumn: boolean[] = [];
+            var revealedColumn : boolean[] = [];
             for (var col: number = 0; col < cols; col++) {
-                colToBuild.push(Math.random() < 0.2);
+                bombsColumn.push(Math.random() < 0.2);
+                revealedColumn.push(false);
             }
-            this.squares.push(colToBuild);
+            this.bombs.push(bombsColumn);
+            this.revealed.push(revealedColumn);
         }
     }
 
     hasBomb(col : number, row : number) : boolean {
-        return this.squares[row][col];
+        return this.bombs[row][col];
     }
 
-    numberOfAdjacentBombs(col : number, row: number){
+    isRevealed(col : number, row: number) : boolean {
+        return this.revealed[row][col];
+    }
+
+    public reveal(col: number, row: number) : (number | null){
+        this.revealed[row][col] = true;
+        return this.numberOfAdjacentBombs(col, row);
+    }
+
+    private numberOfAdjacentBombs(col : number, row: number) : (number | null){
         // this describes a 'circle' of adjacent squares around the current square
         let relativePositions : [number, number][] = [  [-1, -1], [0, -1], [1, -1],
                                                         [-1, 0], [1, 0],
