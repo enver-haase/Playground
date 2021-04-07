@@ -1,21 +1,37 @@
 export class MineSweeperPlayfield{
 
-    bombs : boolean[][];
-    revealed : boolean[][];
+    private readonly bombs : boolean[][];
+    private readonly revealed : boolean[][];
+    private readonly numBombs : number;
+    private readonly numSquares : number;
 
     constructor(cols : number, rows : number){
+        this.numSquares = cols * rows;
+        this.numBombs = 0;
         this.bombs = [];
         this.revealed = [];
         for (var row: number = 0; row < rows; row++) {
             var bombsColumn: boolean[] = [];
             var revealedColumn : boolean[] = [];
             for (var col: number = 0; col < cols; col++) {
-                bombsColumn.push(Math.random() < 0.2);
+                let bomb : boolean = (Math.random() < 0.2);
+                bombsColumn.push(bomb);
+                if (bomb){
+                    this.numBombs++;
+                }
                 revealedColumn.push(false);
             }
             this.bombs.push(bombsColumn);
             this.revealed.push(revealedColumn);
         }
+    }
+
+    numberOfBombs() : number {
+        return this.numBombs;
+    }
+
+    numberOfSquares() : number {
+        return this.numSquares;
     }
 
     hasBomb(col : number, row : number) : boolean {
@@ -26,9 +42,21 @@ export class MineSweeperPlayfield{
         return this.revealed[row][col];
     }
 
+    revealAll() {
+        for (let row : number = 0; row < this.bombs.length; row++){
+            for (let col: number = 0; col < this.bombs[0].length; col++){
+                this.reveal(col, row);
+            }
+        }
+    }
+
     public reveal(col: number, row: number) : (number | null){
         this.revealed[row][col] = true;
-        return this.numberOfAdjacentBombs(col, row);
+        if (this.hasBomb(col, row)){
+            return null;
+        }else {
+            return this.numberOfAdjacentBombs(col, row);
+        }
     }
 
     private numberOfAdjacentBombs(col : number, row: number) : (number | null){

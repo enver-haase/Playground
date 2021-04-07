@@ -8,17 +8,29 @@ import '@vaadin/vaadin-button';
 import '@vaadin/vaadin-text-field/vaadin-number-field';
 import {FormLayoutResponsiveStep} from "@vaadin/vaadin-form-layout/@types/interfaces";
 import {MineSweeperPlayfield} from "Frontend/views/minesweeper/mine-sweeper-playfield";
+import {showNotification} from "@vaadin/flow-frontend/a-notification";
 
 @customElement('mine-sweeper-view')
 export class MineSweeperView extends View {
-  private cols : number = 15;
-  private rows : number = 15;
+  readonly minCols : number = 3;
+  readonly maxCols : number = 50;
+  readonly minRows : number = 3;
+  readonly maxRows : number = 50;
+
+  private cols : number = 3;
+  private rows : number = 3;
 
   private playfield: MineSweeperPlayfield;
+  private turnsPlayed: number;
+  private gameOver : boolean;
+  private win : boolean;
 
   constructor(){
     super();
     this.playfield = new MineSweeperPlayfield(this.cols, this.rows);
+    this.turnsPlayed = 0;
+    this.gameOver = false;
+    this.win = false;
   }
 
   responsiveSteps: FormLayoutResponsiveStep[] = [
@@ -30,11 +42,13 @@ export class MineSweeperView extends View {
     return html`
       <vaadin-vertical-layout class="mine-sweeper-view" theme="padding spacing" style="width: 100%;">
         <vaadin-form-layout .responsiveSteps=${this.responsiveSteps}>
-          <vaadin-number-field @value-changed="${this.rowsChanged}" value="${this.rows}" min="5" max="50" step="1" label="Rows" style="width: calc(99.9% - 0rem); margin-left: 0; margin-right: 0;"></vaadin-number-field>
-          <vaadin-number-field @value-changed="${this.colsChanged}" value="${this.cols}" min="5" max="50" step="1" label="Columns" style="width: calc(99.9% - 0rem); margin-left: 0; margin-right: 0;"></vaadin-number-field>
-          <vaadin-button @click="${this.restart}"></vaadin-button>
+          <vaadin-number-field @value-changed="${this.rowsChanged}" value="${this.rows}" min="${this.minRows}" max="${this.maxRows}" step="1" label="Rows" style="width: calc(99.9% - 0rem); margin-left: 0; margin-right: 0;"></vaadin-number-field>
+          <vaadin-number-field @value-changed="${this.colsChanged}" value="${this.cols}" min="${this.minCols}" max="${this.maxCols}" step="1" label="Columns" style="width: calc(99.9% - 0rem); margin-left: 0; margin-right: 0;"></vaadin-number-field>
+          <vaadin-button @click="${this.restart}" colspan="2">RESTART THE GAME</vaadin-button>
         </vaadin-form-layout>
-        ${this.recalculate()}
+        <vaadin-vertical-layout>
+          ${this.recalculate()}
+        </vaadin-vertical-layout>
       </vaadin-vertical-layout>
     `;
   }
@@ -48,9 +62,17 @@ export class MineSweeperView extends View {
   }
 
   restart() {
-    // TODO: Dialog for 'really? yes/no'
-    this.playfield = new MineSweeperPlayfield(this.cols, this.rows);
-    this.requestUpdate();
+    if (this.cols >= this.minCols && this.cols <= this.maxCols && this.rows >= this.minRows && this.rows <= this.maxRows){
+      // TODO: Dialog for 'really? yes/no'
+      this.playfield = new MineSweeperPlayfield(this.cols, this.rows);
+      this.turnsPlayed = 0;
+      this.gameOver = false;
+      this.win = false;
+      this.requestUpdate();
+    }
+    else{
+      showNotification("Please correct rows & columns dimensions before re-starting.")
+    }
   }
 
   recalculate() {
@@ -69,21 +91,41 @@ export class MineSweeperView extends View {
     return html`${lines}`;
   }
 
-  squareClicked(col : number, row: number){
-    this.playfield.reveal(col, row);
-  }
-
-  squareText(col: number, row: number){
-    if (this.playfield.isRevealed(col, row)){
-      return ""
+  squareClicked(col : number, row: number) {
+    if (!this.gameOver){
+      if (!this.playfield.isRevealed(col, row)) {
+        this.turnsPlayed++;
+        if (this.playfield.reveal(col, row) === null){
+          this.gameOver = true;
+          this.win = false;
+          this.playfield.revealAll();
+          showNotification("BOMB - YOU DIE.")
+        }
+        if (this.turnsPlayed === this.playfield.numberOfSquares() - this.playfield.numberOfBombs()){
+          this.gameOver = true;
+          this.win = true;
+          this.playfield.revealAll();
+          showNotification("SWEPT THE BOARD - WELL DONE!");
+        }
+        this.requestUpdate();
+      }
     }
     else {
-      var toShow : number | null = this.playfield.reveal(col, row);
+      showNotification(this.turnsPlayed === this.playfield.numberOfSquares() - this.playfield.numberOfBombs() ? "You WON - Restart the game." : "You LOST - Restart the game.");
+    }
+  }
+
+  squareText(col: number, row: number) : string{
+    if (!this.playfield.isRevealed(col, row)){
+      return "?"
+    }
+    else {
+      const toShow: number | null = this.playfield.reveal(col, row);
       if (toShow === null){
         return "BOMB"
       }
       else {
-        return toShow;
+        return toShow.toString(10);
       }
     }
   }
