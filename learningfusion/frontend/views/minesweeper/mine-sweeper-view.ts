@@ -1,5 +1,5 @@
 import '!style-loader!css-loader!./mine-sweeper-view.css';
-import {customElement, html, TemplateResult} from 'lit-element';
+import {customElement, html, internalProperty, TemplateResult} from 'lit-element';
 import { View } from '../../views/view';
 import '@vaadin/vaadin-ordered-layout/vaadin-vertical-layout';
 import '@vaadin/vaadin-ordered-layout/vaadin-horizontal-layout';
@@ -9,6 +9,7 @@ import '@vaadin/vaadin-text-field/vaadin-number-field';
 import {FormLayoutResponsiveStep} from "@vaadin/vaadin-form-layout/@types/interfaces";
 import {MineSweeperPlayfield} from "Frontend/views/minesweeper/mine-sweeper-playfield";
 import {showNotification} from "@vaadin/flow-frontend/a-notification";
+import {ConnectionStateStore, ConnectionState, ConnectionStateChangeListener} from "@vaadin/flow-frontend/ConnectionState"
 
 @customElement('mine-sweeper-view')
 export class MineSweeperView extends View {
@@ -17,12 +18,18 @@ export class MineSweeperView extends View {
   readonly minRows : number = 3;
   readonly maxRows : number = 50;
 
+  @internalProperty()
   private cols : number = 3;
+  @internalProperty()
   private rows : number = 3;
 
+  @internalProperty()
   private playfield: MineSweeperPlayfield;
+  @internalProperty()
   private turnsPlayed: number;
+  @internalProperty()
   private gameOver : boolean;
+  @internalProperty()
   private win : boolean;
 
   constructor(){
@@ -33,7 +40,23 @@ export class MineSweeperView extends View {
     this.win = false;
   }
 
-  responsiveSteps: FormLayoutResponsiveStep[] = [
+  async connectedCallback(){
+    super.connectedCallback();
+
+    const connectionStateStore : ConnectionStateStore = (window as any).Vaadin.connectionState as ConnectionStateStore;
+    connectionStateStore.addStateChangeListener( (_ : ConnectionState, current: ConnectionState) => {
+      if (current == ConnectionState.CONNECTED){
+        this.updateHighScores();
+      }
+    });
+  }
+
+  updateHighScores() : void {
+    console.log("ON LINE AGAIN!")
+  }
+
+  @internalProperty()
+  private responsiveSteps: FormLayoutResponsiveStep[] = [
     { minWidth: 0, columns: 1 },
     { minWidth: '20em', columns: 2 },
   ];
@@ -100,12 +123,13 @@ export class MineSweeperView extends View {
           this.win = false;
           this.playfield.revealAll();
           showNotification("BOMB - YOU DIE.")
-        }
-        if (this.turnsPlayed === this.playfield.numberOfSquares() - this.playfield.numberOfBombs()){
-          this.gameOver = true;
-          this.win = true;
-          this.playfield.revealAll();
-          showNotification("SWEPT THE BOARD - WELL DONE!");
+        } else {
+          if (this.turnsPlayed === this.playfield.numberOfSquares() - this.playfield.numberOfBombs()) {
+            this.gameOver = true;
+            this.win = true;
+            this.playfield.revealAll();
+            showNotification("SWEPT THE BOARD - WELL DONE!");
+          }
         }
         this.requestUpdate();
       }
