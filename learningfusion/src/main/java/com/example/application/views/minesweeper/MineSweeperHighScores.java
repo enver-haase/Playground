@@ -25,7 +25,7 @@ public class MineSweeperHighScores {
         Integer[] calculatedNewHighscores = merger.subList(0, 10).toArray(new Integer[10]);
         highScoreStore.put(dimensions, calculatedNewHighscores);
 
-        System.out.println("updated high scores to be returned for playfield "+x+"x"+y+"are now:");
+        System.out.println("updated high scores to be returned for playfield "+x+"x"+y+" are now:");
         Arrays.stream(calculatedNewHighscores).sorted(Collections.reverseOrder()).forEach(System.out::println);
         return calculatedNewHighscores;
     }
