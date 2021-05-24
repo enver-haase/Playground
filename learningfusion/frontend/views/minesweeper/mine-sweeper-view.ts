@@ -1,6 +1,6 @@
 import '!style-loader!css-loader!./mine-sweeper-view.css';
 import {customElement, html, internalProperty, TemplateResult} from 'lit-element';
-import { View } from '../../views/view';
+import {View} from '../../views/view';
 import '@vaadin/vaadin-ordered-layout/vaadin-vertical-layout';
 import '@vaadin/vaadin-ordered-layout/vaadin-horizontal-layout';
 import '@vaadin/vaadin-form-layout';
@@ -9,7 +9,9 @@ import '@vaadin/vaadin-text-field/vaadin-number-field';
 import {FormLayoutResponsiveStep} from "@vaadin/vaadin-form-layout/@types/interfaces";
 import {MineSweeperPlayfield} from "Frontend/views/minesweeper/mine-sweeper-playfield";
 import {showNotification} from "@vaadin/flow-frontend/a-notification";
-import {ConnectionStateStore, ConnectionState, ConnectionStateChangeListener} from "@vaadin/flow-frontend/ConnectionState"
+import {ConnectionState, ConnectionStateStore} from "@vaadin/flow-frontend/ConnectionState"
+import * as MineSweeperEndpoint from 'Frontend/generated/MineSweeperHighScores';
+
 
 @customElement('mine-sweeper-view')
 export class MineSweeperView extends View {
@@ -38,21 +40,25 @@ export class MineSweeperView extends View {
     this.turnsPlayed = 0;
     this.gameOver = false;
     this.win = false;
-  }
 
-  async connectedCallback(){
-    super.connectedCallback();
+    let connectionStateStore : ConnectionStateStore = (window as any).Vaadin.connectionState as ConnectionStateStore;
 
-    const connectionStateStore : ConnectionStateStore = (window as any).Vaadin.connectionState as ConnectionStateStore;
-    connectionStateStore.addStateChangeListener( (_ : ConnectionState, current: ConnectionState) => {
-      if (current == ConnectionState.CONNECTED){
+    connectionStateStore.addStateChangeListener( (before: ConnectionState, current: ConnectionState) => {
+      if (before === ConnectionState.RECONNECTING && current === ConnectionState.CONNECTED){
         this.updateHighScores();
       }
     });
   }
 
   updateHighScores() : void {
-    console.log("ON LINE AGAIN!")
+    console.log("ON LINE AGAIN!");
+    this.doUpdateHighScores().then();
+  }
+
+  private async doUpdateHighScores(): Promise<void> {
+    // TODO: should really be 10 real scores, not 3 that are made up
+    let highScores : number[] = await MineSweeperEndpoint.getHighScores(this.cols, this.rows, [456, 123, 0]).then();
+    highScores.forEach( hi => console.log(hi) )
   }
 
   @internalProperty()
