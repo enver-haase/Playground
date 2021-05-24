@@ -51,6 +51,7 @@ dependencies:
   lit-html: 1.4.1
   mobx: 6.3.2
 devDependencies:
+  '@rollup/plugin-node-resolve': 11.2.1
   '@types/validator': 13.1.0
   chokidar: 3.5.1
   compression-webpack-plugin: 4.0.1_webpack@4.46.0
@@ -63,6 +64,7 @@ devDependencies:
   html-webpack-plugin: 4.5.1_webpack@4.46.0
   lit-css-loader: 0.0.4
   loader-utils: 2.0.0
+  rollup-plugin-lit-css: 2.1.0
   style-loader: 2.0.0_webpack@4.46.0
   ts-loader: 8.0.12_typescript@4.0.3+webpack@4.46.0
   typescript: 4.0.3
@@ -1194,6 +1196,21 @@ packages:
     dev: false
     resolution:
       integrity: sha512-L6uV1oM6T6xbwbVx6t3biG5T2VSSB03LxnIrUd9M2pr6RkHVPFHJ37pC5MUwBAEhkGFJif7eks7fdMMSGZTeEQ==
+  /@rollup/plugin-node-resolve/11.2.1:
+    dependencies:
+      '@rollup/pluginutils': 3.1.0
+      '@types/resolve': 1.17.1
+      builtin-modules: 3.2.0
+      deepmerge: 4.2.2
+      is-module: 1.0.0
+      resolve: 1.20.0
+    dev: true
+    engines:
+      node: '>= 10.0.0'
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0
+    resolution:
+      integrity: sha512-yc2n43jcqVyGE2sqV5/YCmocy9ArjVAP/BeXyTtADTBBX6V0e5UMqwO8CdQ0kzjb6zu5P1qMzsScCMRvE9OlVg==
   /@rollup/plugin-node-resolve/7.1.3_rollup@1.32.1:
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@1.32.1
@@ -1219,6 +1236,18 @@ packages:
       rollup: ^1.20.0 || ^2.0.0
     resolution:
       integrity: sha512-IGcu+cydlUMZ5En85jxHH4qj2hta/11BHq95iHEyb2sbgiN0eCdzvUcHw5gt9pBL5lTi4JDYJ1acCoMGpTvEZg==
+  /@rollup/pluginutils/3.1.0:
+    dependencies:
+      '@types/estree': 0.0.39
+      estree-walker: 1.0.1
+      picomatch: 2.3.0
+    dev: true
+    engines:
+      node: '>= 8.0.0'
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0
+    resolution:
+      integrity: sha512-GksZ6pr6TpIjHm8h9lSQ8pi8BE9VeubNT0OMJ3B5uZJ8pz73NPiqOtCog/x2/QzM1ENChPKxMDhiQuRHsqc+lg==
   /@rollup/pluginutils/3.1.0_rollup@1.32.1:
     dependencies:
       '@types/estree': 0.0.39
@@ -1280,6 +1309,12 @@ packages:
     dev: true
     resolution:
       integrity: sha512-auApPaJf3NPfe18hSoJkp8EbZzer2ISk7o8mCC3M9he/a04+gbMF97NkpD2S8riMGvm4BMRI59/SZQSaLTKpsQ==
+  /@types/resolve/1.17.1:
+    dependencies:
+      '@types/node': 15.6.0
+    dev: true
+    resolution:
+      integrity: sha512-yy7HuzQhj0dhGpD8RLXSZWEkLsV9ibvxvi6EiJ3bkqLAO1RGo0WbkWQiwpRlSFymTJRz0d3k5LM3kkx8ArDbLw==
   /@types/source-list-map/0.1.2:
     dev: true
     resolution:
@@ -6768,6 +6803,14 @@ packages:
       rollup: '>=0.60.0 <3'
     resolution:
       integrity: sha512-Lek/TYp1+7g7I+uMfJnnSJ7YWoD58ajo6Oarhlex7lvUce+RCKRuGRSgztDO3/MF/PuGKmUL5iTHKf208UNszw==
+  /rollup-plugin-lit-css/2.1.0:
+    dependencies:
+      rollup-pluginutils: 2.8.2
+      string-to-template-literal: 0.2.2
+      uglifycss: 0.0.29
+    dev: true
+    resolution:
+      integrity: sha512-/sQRK00EmI7C6QNLFeFTjGzMoFX75puY31QFtZncFVVv1gi2U5KDNShcNTNV3R1g3sPRf4XnVKchtzIofPVixg==
   /rollup-plugin-terser/5.3.1_rollup@1.32.1:
     dependencies:
       '@babel/code-frame': 7.12.13
@@ -7210,6 +7253,12 @@ packages:
     dev: true
     resolution:
       integrity: sha512-AiisoFqQ0vbGcZgQPY1cdP2I76glaVA/RauYR4G4thNFgkTqr90yXTo4LYX60Jl+sIlPNHHdGSwo01AvbKUSVQ==
+  /string-to-template-literal/0.2.2:
+    dev: true
+    engines:
+      node: '>=8.0.0'
+    resolution:
+      integrity: sha512-9lSNOLoQKhtdHkp1avgpraImiSvBBgxJQwkVriDDcHmvPsnCZpLbAMJnJxj9Mf1GkziHBo3vwxipukhA+KCC0g==
   /string-width/3.1.0:
     dependencies:
       emoji-regex: 7.0.3
@@ -7534,6 +7583,13 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-tEu6DGxGgRJPb/mVPIZ48e69xCn2yRmCgYmDugAVwmJ6o+0u1RI18eO7E7WBTLYLaEVVOhwQmcdhQHweux/WPg==
+  /uglifycss/0.0.29:
+    dev: true
+    engines:
+      node: '>=6.4.0'
+    hasBin: true
+    resolution:
+      integrity: sha512-J2SQ2QLjiknNGbNdScaNZsXgmMGI0kYNrXaDlr4obnPW9ni1jljb1NeEVWAiTgZ8z+EBWP2ozfT9vpy03rjlMQ==
   /unbox-primitive/1.0.1:
     dependencies:
       function-bind: 1.1.1
@@ -8197,6 +8253,7 @@ specifiers:
   '@polymer/iron-icon': 3.0.1
   '@polymer/iron-list': 3.1.0
   '@polymer/polymer': 3.2.0
+  '@rollup/plugin-node-resolve': ^11.2.0
   '@types/validator': 13.1.0
   '@vaadin/flow-frontend': ./target/flow-frontend
   '@vaadin/form': ./target/flow-frontend/form
@@ -8256,6 +8313,7 @@ specifiers:
   lit-html: 1.4.1
   loader-utils: 2.0.0
   mobx: ^6.1.5
+  rollup-plugin-lit-css: ^2.1.0
   style-loader: ^2.0.0
   ts-loader: 8.0.12
   typescript: 4.0.3

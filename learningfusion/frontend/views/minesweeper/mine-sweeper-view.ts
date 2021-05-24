@@ -26,6 +26,11 @@ export class MineSweeperView extends View {
   private rows : number = 3;
 
   @internalProperty()
+  private nextGameCols : number = 3;
+  @internalProperty()
+  private nextGameRows : number = 3;
+
+  @internalProperty()
   private playfield: MineSweeperPlayfield;
   @internalProperty()
   private turnsPlayed: number;
@@ -83,15 +88,17 @@ export class MineSweeperView extends View {
   }
 
   rowsChanged( e: CustomEvent ){
-    this.rows = e.detail.value;
+    this.nextGameRows = e.detail.value;
   }
 
   colsChanged( e: CustomEvent ){
-    this.cols = e.detail.value;
+    this.nextGameCols = e.detail.value;
   }
 
   restart() {
-    if (this.cols >= this.minCols && this.cols <= this.maxCols && this.rows >= this.minRows && this.rows <= this.maxRows){
+    if (this.nextGameCols >= this.minCols && this.nextGameCols <= this.maxCols && this.nextGameRows >= this.minRows && this.nextGameRows <= this.maxRows){
+      this.cols = this.nextGameCols;
+      this.rows = this.nextGameRows;
       // TODO: Dialog for 'really? yes/no'
       this.playfield = new MineSweeperPlayfield(this.cols, this.rows);
       this.turnsPlayed = 0;

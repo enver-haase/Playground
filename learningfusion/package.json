@@ -78,7 +78,9 @@
     "workbox-core": "5.1.4",
     "workbox-precaching": "5.1.4",
     "workbox-webpack-plugin": "5.1.4",
-    "fork-ts-checker-webpack-plugin": "6.2.1"
+    "fork-ts-checker-webpack-plugin": "6.2.1",
+    "rollup-plugin-lit-css": "^2.1.0",
+    "@rollup/plugin-node-resolve": "^11.2.0"
   },
   "vaadin": {
     "dependencies": {
@@ -155,6 +157,6 @@
       "workbox-webpack-plugin": "5.1.4",
       "fork-ts-checker-webpack-plugin": "6.2.1"
     },
-    "hash": "97a009548bd21406af82faafdfa7aa74554c58c3b158a954a76496b3ffde3df1"
+    "hash": "59f47abfc5ce2fcb1da53322852e8e4a6ad7d5636e04cfeaad2219e63b0a77b1"
   }
 }
