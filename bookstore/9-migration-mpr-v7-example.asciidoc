@@ -1,0 +1,642 @@
+---
+title: Migration Vaadin 7 MPR Example
+order: 9
+layout: page
+---
+
+= Pre requisites
+In order to compile the widgetset you'll need a Java version <=8 and Vaadin 10 requires a Java version >= 8. Therefore,
+it is recommended that you have JDK 8 installed on your system before continuing this example. If you have multiple JDKs
+installed, you'll also have to make sure that you IDE is running the goals with Java 8.
+
+Before you proceed, you want to make sure that the initial code works on your environment, so it is recommended to run:
+
+....
+
+mvn clean install
+cd bookstore-ui
+mvn jetty:run
+....
+
+and navigate to http://localhost:8080 to make sure your code works before you start changing it.
+(in IntelliJ you'll probably have to set the project SDK manually after importing the project)
+
+You can follow the more detailed and up to date documentation on MPR migration here https://vaadin.com/docs/v10/mpr/introduction/step-1-maven-v7.html
+while we'll condense the steps here and work our way through the steps required for this specific project.
+
+= Step 1 - Configuration changes
+First you'll have to update the dependencies in the bookstore pom.xml files.
+
+Since this is a multi-module project, the parent pom defines the versions so we'll start
+by adding the MPR and flow versions that our application will be using, and updating dependency managements:
+....
+ <properties>
+        <vaadin.version>7.7.15</vaadin.version>
+        <vaadin.plugin.version>7.7.15</vaadin.plugin.version>
+        <vaadin.mpr.version>1.0.0</vaadin.mpr.version>
+        <vaadin.flow.version>1.0.5</vaadin.flow.version>
+        <vaadin.flow.plugin.version>1.0.5</vaadin.flow.plugin.version>
+....
+
+....
+<pluginManagement>
+   <plugins>
+       ...
+        <plugin>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-maven-plugin</artifactId>
+            <version>${vaadin.plugin.version}</version>
+        </plugin>
+        <plugin>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-flow-plugin</artifactId>
+            <version>${vaadin.flow.plugin.version}</version>
+            <executions>
+               <execution>
+                   <goals>
+                       <goal>copy-production-files</goal>
+                       <goal>package-for-production</goal>
+                   </goals>
+               </execution>
+            </executions>
+        </plugin>
+        ...
+    </plugins>
+</pluginManagement>
+...
+ <dependencyManagement>
+        <dependencies>
+           ...
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>mpr-v7</artifactId>
+                <version>${vaadin.mpr.version}</version>
+            </dependency>
+             <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>flow-server-production-mode</artifactId>
+                <version>${flow.version}</version>
+            </dependency>
+            ...
+        </dependencies>
+    </dependencyManagement>
+....
+
+We'll also have to tweak our widgetset.gwt.xml a bit by replacing the inheritance to the v7 Default widgetset
+by the MPR widgetset:
+[source, xml]
+....
+<module>
+    <!--<inherits name="com.vaadin.DefaultWidgetSet"/>-->
+    <inherits name="com.vaadin.mpr.MprWidgetSet"/>
+    <stylesheet src="resetbuttonfortextfield/styles.css"/>
+</module>
+....
+
+Next we'll have to modify our UI and widgetset pom.xmls
+
+bookstore-ui/pom.xml
+....
+<dependencies>
+    <!-- Versions for these are configured in the parent POM -->
+   ...
+    <dependency>
+        <groupId>com.vaadin</groupId>
+        <artifactId>mpr-v7</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-server</artifactId>
+        <exclusions>
+            <exclusion>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+            </exclusion>
+            <exclusion>
+                <groupId>com.google.gwt</groupId>
+                <artifactId>gwt-elemental</artifactId>
+            </exclusion>
+        </exclusions>
+    </dependency>
+    ...
+    <dependency>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-themes</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-simple</artifactId>
+    </dependency>
+    ...
+    </dependency>
+</dependencies>
+...
+<build>
+    <plugins>
+    ...
+        <plugin>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-maven-plugin</artifactId>
+            <configuration>
+                <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+                <webappDirectory>${basedir}/target/classes/VAADIN/widgetsets</webappDirectory>
+                <draftCompile>false</draftCompile>
+                <compileReport>false</compileReport>
+                <style>OBF</style>
+                <!--<strict>true</strict>-->
+            </configuration>
+            ...
+        </plugin>
+    </plugins>
+...
+....
+
+bookstore-widgetset/pom.xml
+[source, xml]
+....
+ <dependencies>
+         <!-- Versions for these are configured in the parent POM -->
+         <dependency>
+             <groupId>com.vaadin</groupId>
+             <artifactId>vaadin-client</artifactId>
+             <scope>provided</scope>
+         </dependency>
+         <!--<dependency>
+             <groupId>com.vaadin</groupId>
+             <artifactId>vaadin-client-compiler</artifactId>
+             <scope>provided</scope>
+         </dependency>-->
+         <dependency>
+             <groupId>com.vaadin</groupId>
+             <artifactId>mpr-v7</artifactId>
+             <scope>provided</scope>
+         </dependency>
+         <dependency>
+             <groupId>com.vaadin</groupId>
+             <artifactId>vaadin-server</artifactId>
+             <exclusions>
+                 <exclusion>
+                     <groupId>org.jsoup</groupId>
+                     <artifactId>jsoup</artifactId>
+                 </exclusion>
+                 <exclusion>
+                     <groupId>com.google.gwt</groupId>
+                     <artifactId>gwt-elemental</artifactId>
+                 </exclusion>
+             </exclusions>
+         </dependency>
+     </dependencies>
+...
+<!-- remove strict from widgetset compilation -->
+....
+
+= Step 2 - Modifying our Java
+In order to get our application running with MPR, we'll have to make a couple of small
+modifications:
+
+Create a new Class next to BookstoreUI.java called BookstoreMainLaoyut.java,
+this will be our new root layout for our application.
+
+[source, java]
+....
+ @MprTheme("bookstoretheme")
+ @MprWidgetset("com.example.vaadin.bookstore.mpr.bookstore.BookstoreWidgetset")
+ @Route("")
+ @LegacyUI(BookstoreUI.class)
+ public class BookstoreMainLayout extends Div {
+
+     private LegacyWrapper legacyWrapper;
+
+     public BookstoreMainLayout() {
+         setSizeFull();
+     }
+
+     @Override
+     protected void onAttach(AttachEvent attachEvent) {
+         super.onAttach(attachEvent);
+         LegacyWrapper legacyWrapper = new LegacyWrapper(BookstoreUI.get().getContentPanel());
+         legacyWrapper.addClassName("legacy-wrapper");
+         legacyWrapper.setSizeFull();
+         add(legacyWrapper);
+     }
+ }
+....
+
+
+Open BookstoreUI.java in the ui module, and remove the viewport, theme and widgetset annotations (they are in the new root now).
+Change the super class from UI to MprUI and add a suitable base component to the layout
+(we decided to go with a panel since it mimics the old v7 UI in that it has a setContent() method and handles scrolling,
+but you could use what you want)
+
+[soruce, java]
+....
+//@Viewport("user-scalable=no,initial-scale=1.0")
+//@Theme("bookstoretheme")
+//@Widgetset("com.example.vaadin.bookstore.mpr.bookstore.BookstoreWidgetset")
+public class BookstoreUI extends MprUI {
+
+    private AccessControl accessControl = new BasicAccessControl();
+    private Panel contentPanel;
+
+    public BookstoreUI() {
+        super();
+        contentPanel = new Panel();
+        contentPanel.addStyleName(ValoTheme.PANEL_BORDERLESS);
+        contentPanel.setSizeFull();
+    }
+
+    public Panel getContentPanel() {
+        return contentPanel;
+    }
+    ...
+....
+
+for the init method, we want to remove the calls to
+setResponsive, setLocale and setTitle. Additionally we want to make the "setContent" calls to
+point to our content panel and remove the old v7 Servlet.
+
+Original BookstoreUI.java init() method
+[source, java]
+....
+@Override
+protected void init(VaadinRequest vaadinRequest) {
+    Responsive.makeResponsive(this);
+    setLocale(vaadinRequest.getLocale());
+    getPage().setTitle("Bookstore");
+    if (!accessControl.isUserSignedIn()) {
+        setContent(new LoginScreen(accessControl, new LoginListener() {
+            @Override
+            public void loginSuccessful() {
+                showMainView();
+            }
+        }));
+    } else {
+        showMainView();
+    }
+}
+
+protected void showMainView() {
+    addStyleName(ValoTheme.UI_WITH_MENU);
+    setContent(new MainScreen(BookstoreUI.this));
+    getNavigator().navigateTo(getNavigator().getState());
+}
+
+....
+
+Refactored BookstoreUI.java init method
+[source, java]
+....
+@Override
+protected void init(VaadinRequest vaadinRequest) {
+    super.init(vaadinRequest);
+    if (!accessControl.isUserSignedIn()) {
+        contentPanel.setContent(new LoginScreen(accessControl, new LoginListener() {
+            @Override
+            public void loginSuccessful() {
+                showMainView();
+            }
+        }));
+    } else {
+        showMainView();
+    }
+}
+
+protected void showMainView() {
+    addStyleName(ValoTheme.UI_WITH_MENU);
+    contentPanel.setContent(new MainScreen(BookstoreUI.this));
+    getNavigator().navigateTo(getNavigator().getState());
+}
+....
+
+After these changes you should be able to run
+....
+mvn clean install
+cd bookstore-ui
+mvn jetty:run
+....
+
+and be presented with the login page after navigating to http://localhost:8080 with a modern browser like Chrome
+(IE and old FF/Safari will not work reliably yet).
+
+However, there are a couple of things that we're missing:
+
+We need to add the page title back, we could do it with an annotation (recommended) on our new root view,
+or the "old fashioned way" through the page, however we should do it from the V10 context:
+
+[source, java]
+....
+@PageTitle("Bookstore")
+@MprTheme("bookstoretheme")
+@MprWidgetset("com.example.vaadin.bookstore.mpr.bookstore.BookstoreWidgetset")
+@Route("")
+@LegacyUI(BookstoreUI.class)
+public class BookstoreMainLayout extends Div {
+...
+}
+....
+
+or
+
+[source, java]
+....
+@Override
+    protected void onAttach(AttachEvent attachEvent) {
+        super.onAttach(attachEvent);
+        ...
+        getUI().ifPresent(ui -> ui.getPage().setTitle("Bookstore"));
+    }
+....
+
+If you keep clicking around you'll notice that our once responsive application is no longer responsive, and
+the logout button is no longer at the bottom of the page.
+
+We will address this as we tweak the theme.
+
+= Step 3 - Making it all responsive again
+
+First we need to reintroduce the @Viewport annotation for mobile devices.
+MPR beta1 also has a bug for which we need a workaround, the executeJavaScript portion
+is not needed after https://github.com/vaadin/multiplatform-runtime/issues/23 is fixed:
+
+[source, java]
+....
+@Viewport("width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes")
+@MprTheme("bookstoretheme")
+@MprWidgetset("com.example.vaadin.bookstore.mpr.bookstore.BookstoreWidgetset")
+@Route("")
+@LegacyUI(BookstoreUI.class)
+@PageTitle("Bookstore")
+public class BookstoreMainLayout extends Div {
+
+    private LegacyWrapper legacyWrapper;
+
+    public BookstoreMainLayout() {
+        setSizeFull();
+
+    }
+
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        super.onAttach(attachEvent);
+
+        //Should not be needed after https://github.com/vaadin/multiplatform-runtime/issues/23 is fixed, will slow down resizing considerably
+        getUI().get().getPage().executeJavaScript("setTimeout(function() { window.addEventListener('resize', vaadin.forceLayout); }, 1000)");
+
+        LegacyWrapper legacyWrapper = new LegacyWrapper(BookstoreUI.get().getContentPanel());
+        legacyWrapper.addClassName("legacy-wrapper");
+        legacyWrapper.setSizeFull();
+        BookstoreUI.get().initialize();
+        add(legacyWrapper);
+    }
+}
+....
+
+We also need to make our new legacyRoot panel responsive and add the valo UI_WITH_MENU style to it
+in order to have the menu working like before:
+
+[source, java]
+....
+public class BookstoreUI extends MprUI {
+
+    private AccessControl accessControl = new BasicAccessControl();
+    private Panel contentPanel;
+
+    public BookstoreUI() {
+        super();
+        contentPanel = new Panel();
+        contentPanel.addStyleName(ValoTheme.PANEL_BORDERLESS);
+        contentPanel.addStyleName(ValoTheme.UI_WITH_MENU);
+        contentPanel.setResponsive(true);
+        contentPanel.addStyleName("legacy-content-root");
+        contentPanel.setSizeFull();
+    }
+
+    public Panel getContentPanel() {
+        return contentPanel;
+    }
+    ...
+}
+....
+
+we can also remove
+....
+addStyleName(ValoTheme.UI_WITH_MENU);
+....
+
+from shotMainView() if we wish as it is not needed anymore.
+
+Finally we need to open the bookstoretheme.scss theme file and replace all .v-ui[widht-range...]
+entries with .legacy-content-root[width-range...] (there are 5, use find .v-ui[ in your IDE to find them in the file)
+
+original:
+[source, scss]
+....
+  ...
+  // hide the logo for a more compact header when the menu is narrow
+  .v-ui[width-range~="801px-1100px"] .valo-menu-part {
+    .v-slot-logo,
+    .v-slot-logo + .v-spacing {
+      display: none;
+    }
+  }
+  ...
+....
+
+modified:
+
+[source, scss]
+....
+  ...
+  // hide the logo for a more compact header when the menu is narrow
+  .legacy-content-root[width-range~="801px-1100px"] .valo-menu-part {
+    .v-slot-logo,
+    .v-slot-logo + .v-spacing {
+      display: none;
+    }
+  }
+  ...
+....
+
+Don't forget to recompile your theme before testing it out.
+
+= Step 4 - Adding Vaadin 10 platform components, production mode and older browser support
+While MPR comes with a minimal Vaadin 10 runtime, MPR does not contain any of the more complex and feature rich
+components from the Vaadin Platform. In order to start migrating our UI to new components and also
+enable transpilation to ES5 for older browsers (for instance IE) we need to bring in the Vaadin Platform to
+our application.
+
+We need to add a couple of properties and some dependency management to our root pom.xml. Note that
+the vaadin.platform.version, flow-version and flow-plugin-version need to be compatible with each other
+and the versions you use need to be compatible with MPR.
+[source, xml]
+....
+ <properties>
+     ...
+     <vaadin.flow.version>1.0.4</vaadin.flow.version>
+     <flow.version>1.0.4</flow.version>
+     <vaadin.platform.version>10.0.4</vaadin.platform.version>
+     <vaadin.flow.plugin.version>1.0.4</vaadin.flow.plugin.version>
+     ...
+ </properties>
+ ...
+ <dependencyManagement>
+     <dependencies>
+     ...
+     <dependency>
+         <groupId>com.vaadin</groupId>
+         <artifactId>vaadin-bom</artifactId>
+         <version>${vaadin.platform.version}</version>
+         <type>pom</type>
+         <scope>import</scope>
+     </dependency>
+     <dependency>
+         <groupId>com.vaadin</groupId>
+         <artifactId>flow-server-production-mode</artifactId>
+         <version>${flow.version}</version>
+         <version>${vaadin.flow.version}</version>
+    </dependency>
+    <dependency>
+         <groupId>com.vaadin</groupId>
+         <artifactId>vaadin-core</artifactId>
+         <version>${vaadin.platform.version}</version>
+     </dependency>
+     ...
+     </dependencies>
+ <dependencyManagement>
+....
+
+Then in our bookstore-ui/pom.xml we need to add the Vaadin platform (vaadin-core) which will give us
+access to all that Vaadin platform has to offer.
+[source, xml]
+....
+<dependencies>
+    <dependency>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-core</artifactId>
+    </dependency>
+</dependencies>
+....
+
+In order to run more complex components (and later our own Polymer templates) in older browsers we can add a
+maven profile that will use the "flow-maven-plugin", instead ov "vaadin-maven-plugin" to avoid conflicts
+with v7 theme and widgetset compilations. Once we have migrated our application and are ready to remove
+MPR, we can swap out the vaadin-maven-plugin to its latest version and use it here as well.
+
+[source, xml]
+....
+<profiles>
+    <profile>
+        <id>transpile</id>
+        <activation>
+            <property>
+                <name>vaadin.productionMode</name>
+            </property>
+        </activation>
+
+        <dependencies>
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>flow-server-production-mode</artifactId>
+            </dependency>
+        </dependencies>
+
+        <build>
+            <plugins>
+                <plugin>
+                    <groupId>com.vaadin</groupId>
+                    <artifactId>flow-maven-plugin</artifactId>
+                    <version>${vaadin.flow.plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>copy-production-files</goal>
+                                <goal>package-for-production</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </build>
+    </profile>
+</profiles>
+....
+
+Now you should be able to add a Vaadin 10 component (just for demonstration purposes) to the new root view
+and try out the transpilation if you have IE 11 available (full classpath only for demonstration purposes):
+[source, java]
+....
+public class BookstoreMainLayout extends Div {
+    ...
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        super.onAttach(attachEvent);
+
+        com.vaadin.flow.component.button.Button flowButton = new Button("Flow button");
+        add(flowButton);
+        ...
+    }
+    ...
+}
+....
+
+compile and run the entire project
+....
+cd <path-to-root-of-bookstore>
+mvn clean install
+cd bookstore-ui
+mvn jetty:run-exploded -Ptranspile
+....
+
+Open your favorite IE11 browser and navigate to http://localhost:8080. You should see the "Flow button" above
+the login page and if you open up the developer tools -> network and refresh, you should see that the application loads
+a html file called "vaadin-flow-bundle-<random-d>.cache.html from http://localhost:8080/frontend-es5
+
+If you do the same test on Chrome, you'll see that a similar file (with a different id) is being loaded from
+http://localhost:8080/frontend-es6. These are the transpiled Vaadin 10 client-side components.
+
+You do not need to run transpilation all the time if you're developing with a modern browser that supports ES6,
+for instance Chrome. However, for production builds you of course always want run the transpilation.
+
+=== 4.1 Creating a production WAR
+----
+Note that in this tutorial we brought in all of the Vaadin Platform core components which will be included in thewebcomponents bundle. This is probably not optimal unless you're using every component on every page.
+----
+Since our example application uses an overlay for production builds that has a web.xml that
+sets Vaadin to production mode, we can simply run:
+....
+cd <path-to-root-of-bookstore>
+mvn clean install -Ptranspile,production
+....
+
+our production war will be available in the bookstore-production/target folder. You can drop it into your favorite
+Servlet 3.0 compatible server like Tomcat, Jetty etc.
+
+----
+Once you're done testing, remember to remove the stray button from the main layout.
+----
+
+In the next chapter we'll start working on migrating our application to Vaadin 10 one component at a time while
+maintaining a working hybrid Vaadin 7 and Vaadin 10 application until we have everything migrated.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
