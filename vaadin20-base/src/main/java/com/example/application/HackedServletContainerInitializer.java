@@ -14,8 +14,8 @@ public class HackedServletContainerInitializer implements ServletContainerInitia
         System.err.println("XXXXXXXX IT WORKS");
         System.out.println("XXXXXXXX IT WORKS");
 
-        List<Class<?>> collection = Arrays.asList(new Class[]{LookupInitializer.class});
-        Set<Class<?>> classes = new HashSet<>(collection);
-        new LookupServletContainerInitializer().onStartup(classes, ctx);
+        //List<Class<?>> collection = Arrays.asList(new Class[]{LookupInitializer.class});
+        //Set<Class<?>> classes = new HashSet<>(collection);
+        //new LookupServletContainerInitializer().onStartup(classes, ctx);
     }
 }
