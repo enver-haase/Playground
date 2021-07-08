@@ -1,6 +1,6 @@
 package com.example.application.views.minesweeper;
 
-import com.vaadin.flow.server.auth.AnonymousAllowed;
+import com.vaadin.flow.server.connect.auth.AnonymousAllowed;
 import com.vaadin.flow.server.connect.Endpoint;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
