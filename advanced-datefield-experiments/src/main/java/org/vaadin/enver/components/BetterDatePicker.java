@@ -1,7 +1,6 @@
 package org.vaadin.enver.components;
 
 import com.vaadin.flow.component.datepicker.DatePicker;
-import jdk.internal.jline.internal.Nullable;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -125,7 +124,6 @@ public class BetterDatePicker extends DatePicker {
 	 * @param input the text field string
 	 * @return a date if it can be parsed, or null otherwise
 	 */
-	@Nullable
 	private LocalDate parseSecondary(String input){
 
 		try {
