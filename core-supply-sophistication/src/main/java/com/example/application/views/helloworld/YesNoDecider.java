@@ -46,6 +46,7 @@ public class YesNoDecider {
 
         UI ui = UI.getCurrent(); // in the UI thread, get the UI instance
         new Thread(() -> { // worker thread trying to let the UI thread run the command as soon as the required user-input boolean if there
+            UI.setCurrent(ui); // in case the command uses 'UI.getCurrent()' assign the parent thread's UI to this new child thread.
             while (!command.done) { // repeat until it is finally done.
                 try {
                     ui.access(command).get(); // and use the UI instance in a child thread, block this thread until the UI thread tried another time.
