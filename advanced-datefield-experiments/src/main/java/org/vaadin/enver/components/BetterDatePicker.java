@@ -111,7 +111,7 @@ public class BetterDatePicker extends DatePicker {
 		// client-side. Then secondary parsing is not triggered because a value change NULL -> NULL
 		// is not caught. At least do something when the user clicks away.
 		addBlurListener( e -> {
-			if (isInvalid()) {
+			if (isInvalid() || getValue().getYear() < 100) {
 				getElement().executeJs("return this._inputValue").then(
 						json -> setValue(parseSecondary(json.asString()))
 				);
@@ -148,15 +148,43 @@ public class BetterDatePicker extends DatePicker {
 			}
 			if (st.hasMoreTokens()){
 				year = Integer.parseInt(st.nextToken());
-			}
 
+				if (year < 100) { // 2-digit tears fix
+					year = closestDate(year);
+				}
+			}
 			return LocalDate.of(year, month, dayOfMonth);
 		}
 		catch (RuntimeException e){
 			setInvalid(true);
 			return null;
 		}
+	}
 
+
+	// See https://en.wikipedia.org/wiki/Date_windowing : Closest Date
+	private int closestDate(int year){
+		final int thisYear = LocalDate.now().getYear();
+
+		final int thisCentury = 100 * (thisYear / 100);
+		final int lastCentury = thisCentury - 100;
+		final int nextCentury = thisCentury + 100;
+
+		int thisCenturyInterpretation = thisCentury + year;
+		int lastCenturyInterpretation = lastCentury + year;
+		int nextCenturyInterpretation = nextCentury + year;
+
+		int thisDelta = Math.abs(thisYear - thisCenturyInterpretation);
+		int lastDelta = Math.abs(thisYear - lastCenturyInterpretation);
+		int nextDelta = Math.abs(thisYear - nextCenturyInterpretation);
+
+		if (thisDelta <= lastDelta && thisDelta <= nextDelta){
+			return thisCenturyInterpretation;
+		} else if (lastDelta <= thisDelta && lastDelta <= nextDelta){
+			return lastCenturyInterpretation;
+		} else {
+			return nextCenturyInterpretation;
+		}
 	}
 
 }
