@@ -6,6 +6,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.treegrid.TreeGrid;
+import com.vaadin.flow.function.ValueProvider;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -18,8 +19,7 @@ import org.ehcache.sizeof.filters.SizeOfFilter;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Collection;
-import java.util.IdentityHashMap;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,10 +35,18 @@ public class HelloWorldFlowView extends HorizontalLayout {
     Logger logger = Logger.getLogger(HelloWorldFlowView.class.getName());
 
     private final IdentityHashMap<Object, Long> sizes = new IdentityHashMap<>();
+    private final IdentityHashMap<Object, List<Object>> children = new IdentityHashMap<>();
 
     private final SizeOf sizeOf = SizeOf.newInstance(true, false, new SelfExcludingSizeOfFilter());
 
     private final LoggingVisitorListener loggingVisitorListener = new LoggingVisitorListener();
+
+    private static class Tree<T> extends TreeGrid<T> {
+        Tree(ValueProvider<T, ?> valueProvider) {
+            Column<T> only = addHierarchyColumn(valueProvider);
+            only.setAutoWidth(true);
+        }
+    }
 
     private class SelfExcludingSizeOfFilter implements SizeOfFilter{
         @Override
@@ -66,69 +74,73 @@ public class HelloWorldFlowView extends HorizontalLayout {
     private class LoggingVisitorListener implements VisitorListener {
         @Override
         public void visited(Object o, long size) {
-
-            if (!sizes.containsKey(o)) {
-                sizes.put(o, sizeOf.deepSizeOf(o)); // 'size' is only flat!
-            }
-            else{
+            if (sizes.containsKey(o)) {
                 return; // we've been here.
             }
-            long deepSize = sizes.get(o);
 
-            if (deepSize >= INTERESTING_SIZE_MINIMUM) {
-                logger.log(Level.INFO, o.getClass().getName()+"@"+System.identityHashCode(o)+" size "+deepSize);
+            sizes.put(o, sizeOf.deepSizeOf(o)); // 'size' is only flat!
+            children.put(o, getChildrenOf(o));
+        }
+    }
 
-                Field[] fields = o.getClass().getFields();
+    private List<Object> getChildrenOf(Object o) {
 
-                if (fields.length != 0) {
-                    for (Field f : fields) {
-                        StringBuilder fieldOutput = new StringBuilder();
-                        fieldOutput.append(f.getType().getName()).append(" ").append(f.getName());
-                        if (f.isAccessible()) {
-                            if (!f.getType().isPrimitive()) {
-                                try {
-                                    Object value = f.get(Modifier.isStatic(f.getModifiers()) ? null : o);
-                                    if (!sizes.containsKey(value)) {
-                                        sizes.put(value, sizeOf.deepSizeOf(value));
-                                    }
-                                    else {
-                                        fieldOutput.append(" size: ").append(sizes.get(value));
-                                    }
-                                } catch (IllegalAccessException accessException) {
-                                    logger.log(Level.WARNING, "Cannot access above field.", accessException);
+        final List<Object> retVal = new ArrayList<>();
+
+        long deepSize = sizes.get(o);
+        if (deepSize >= INTERESTING_SIZE_MINIMUM) {
+            logger.log(Level.INFO, o.getClass().getName()+"@"+System.identityHashCode(o)+" size "+ deepSize);
+
+            Field[] fields = o.getClass().getFields();
+            if (fields.length != 0) {
+                for (Field f : fields) {
+                    StringBuilder fieldOutput = new StringBuilder();
+                    fieldOutput.append(f.getType().getName()).append(" ").append(f.getName());
+                    if (f.isAccessible()) {
+                        if (!f.getType().isPrimitive()) {
+                            try {
+                                Object value = f.get(Modifier.isStatic(f.getModifiers()) ? null : o);
+                                retVal.add(value);
+                                if (!sizes.containsKey(value)) {
+                                    sizes.put(value, sizeOf.deepSizeOf(value));
                                 }
-                            } else {
-                                fieldOutput.append(" (primitive)");
+                                else {
+                                    fieldOutput.append(" size: ").append(sizes.get(value));
+                                }
+                            } catch (IllegalAccessException accessException) {
+                                logger.log(Level.WARNING, "Cannot access above field.", accessException);
                             }
                         } else {
-                            fieldOutput.append(" (not accessible)");
+                            fieldOutput.append(" (primitive)");
                         }
-
-                        logger.log(Level.INFO, fieldOutput.toString());
+                    } else {
+                        fieldOutput.append(" (not accessible)");
                     }
-                } else {
-                    logger.log(Level.INFO, "(no fields)");
-                }
-            } else{
-                //logger.log(Level.INFO, "(uninteresting)"); // too uninteresting to even log!
-            }
 
-            //logger.log(Level.INFO, o.getClass().getName()+"@"+System.identityHashCode(o)+" visited, size "+size);
+                    logger.log(Level.INFO, fieldOutput.toString());
+                }
+            } else {
+                logger.log(Level.INFO, "(no fields)");
+            }
         }
+        return retVal;
+    }
+
+    private String getObjectDescription(Object o){
+        return o.getClass().getName()+"@"+System.identityHashCode(o)+", size: "+sizes.get(o);
     }
 
     public HelloWorldFlowView() {
         addClassName("hello-world-flow-view");
         name = new TextField("Your name");
         Button sayHello = new Button("Say hello");
-        TreeGrid treeGrid = new TreeGrid<>();
+        Tree<Object> treeGrid = new Tree<>(this::getObjectDescription);
         add(name, sayHello, treeGrid);
         setVerticalComponentAlignment(Alignment.END, name, sayHello);
         sayHello.addClickListener(e -> {
             Notification.show("Hello " + name.getValue()+"! Session size is: "+sizeOf.deepSizeOf(loggingVisitorListener, VaadinSession.getCurrent()));
-            sizes.clear();
+            treeGrid.setItems(Collections.singleton(VaadinSession.getCurrent()), this::getChildrenOf);
         });
     }
-
 
 }
