@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 
+import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.server.connect.EndpointExposed;
-import com.vaadin.flow.server.connect.auth.AnonymousAllowed;
 import org.springframework.data.domain.Page;
 import org.vaadin.artur.helpers.CrudService;
 import org.vaadin.artur.helpers.GridSorter;
