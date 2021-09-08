@@ -14,8 +14,11 @@ import com.vaadin.flow.server.VaadinSession;
 
 import org.ehcache.sizeof.SizeOf;
 import org.ehcache.sizeof.VisitorListener;
+import org.ehcache.sizeof.filters.SizeOfFilter;
 
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,13 +28,18 @@ import java.util.logging.Logger;
 @CssImport("./views/helloworldflow/hello-world-flow-view.css")
 public class HelloWorldFlowView extends HorizontalLayout {
 
+    private static final long INTERESTING_SIZE_MINIMUM = 1024;
+
     private final TextField name;
 
     Logger logger = Logger.getLogger(HelloWorldFlowView.class.getName());
 
-    private final SizeOf sizeOf = SizeOf.newInstance(true, false);
+    private final IdentityHashMap<Object, Long> sizes = new IdentityHashMap<>();
+    private final IdentityHashMap<Object, List<Object>> children = new IdentityHashMap<>();
 
-//    private final LoggingVisitorListener loggingVisitorListener = new LoggingVisitorListener();
+    private final SizeOf sizeOf = SizeOf.newInstance(true, false, new SelfExcludingSizeOfFilter());
+
+    private final LoggingVisitorListener loggingVisitorListener = new LoggingVisitorListener();
 
     private static class Tree<T> extends TreeGrid<T> {
         Tree(ValueProvider<T, ?> valueProvider) {
@@ -40,56 +48,99 @@ public class HelloWorldFlowView extends HorizontalLayout {
         }
     }
 
-//    private class LoggingVisitorListener implements VisitorListener {
-//        long currentSize = 0;
-//        public void visited(Object object, long size) {
-//            currentSize += size;
-//            logger.log(Level.INFO, getDesc(object)+" cumulated size so far, from tree root: "+currentSize);
-//        }
-//    }
-//
-//    private static String getDesc(Object o){
-//        return o.getClass().getName()+"@"+System.identityHashCode(o);
-//    }
-
-    public static class ObjectWrapper {
-
-        public static ObjectWrapper wrap(Object o){
-            return new ObjectWrapper(o);
-        }
-
-        private final Object o;
-        public ObjectWrapper(Object o){
-            this.o = o;
-        }
+    private class SelfExcludingSizeOfFilter implements SizeOfFilter{
         @Override
-        public int hashCode(){
-            return System.identityHashCode(o);
+        public Collection<Field> filterFields(Class<?> aClass, Collection<Field> collection) {
+//            logger.log(Level.INFO, "Visiting "+collection.size()+" field(s) of class "+aClass.getName()+":");
+//            for (Field field : collection){
+//                logger.log(Level.INFO, field.getType().getName()+" --- "+field.getName());
+//            }
+//            logger.log(Level.INFO, "Done visiting "+collection.size()+" field(s) of class "+aClass.getName());
+            return collection;
         }
+
         @Override
-        public boolean equals(Object o){
-            return this.o == o;
+        public boolean filterClass(Class<?> aClass) {
+            String[] excludes = {HelloWorldFlowView.class.getName(), sizes.getClass().getName(), "org.apache.tomcat", "org.springframework.boot", "java."};
+            for (String exclude : excludes){
+                if (aClass.getName().contains(exclude)){
+                    return false;
+                }
+            }
+            return true;
         }
+    }
+
+    private class LoggingVisitorListener implements VisitorListener {
+        @Override
+        public void visited(Object o, long size) {
+            if (sizes.containsKey(o)) {
+                return; // we've been here.
+            }
+
+            sizes.put(o, sizeOf.deepSizeOf(o)); // 'size' is only flat!
+            children.put(o, getChildrenOf(o));
+        }
+    }
+
+    private List<Object> getChildrenOf(Object o) {
+
+        final List<Object> retVal = new ArrayList<>();
+
+        long deepSize = sizes.get(o);
+        if (deepSize >= INTERESTING_SIZE_MINIMUM) {
+            logger.log(Level.INFO, o.getClass().getName()+"@"+System.identityHashCode(o)+" size "+ deepSize);
+
+            Field[] fields = o.getClass().getFields();
+            if (fields.length != 0) {
+                for (Field f : fields) {
+                    StringBuilder fieldOutput = new StringBuilder();
+                    fieldOutput.append(f.getType().getName()).append(" ").append(f.getName());
+                    if (f.isAccessible()) {
+                        if (!f.getType().isPrimitive()) {
+                            try {
+                                Object value = f.get(Modifier.isStatic(f.getModifiers()) ? null : o);
+                                retVal.add(value);
+                                if (!sizes.containsKey(value)) {
+                                    sizes.put(value, sizeOf.deepSizeOf(value));
+                                }
+                                else {
+                                    fieldOutput.append(" size: ").append(sizes.get(value));
+                                }
+                            } catch (IllegalAccessException accessException) {
+                                logger.log(Level.WARNING, "Cannot access above field.", accessException);
+                            }
+                        } else {
+                            fieldOutput.append(" (primitive)");
+                        }
+                    } else {
+                        fieldOutput.append(" (not accessible)");
+                    }
+
+                    logger.log(Level.INFO, fieldOutput.toString());
+                }
+            } else {
+                logger.log(Level.INFO, "(no fields)");
+            }
+        }
+        return retVal;
+    }
+
+    private String getObjectDescription(Object o){
+        return o.getClass().getName()+"@"+System.identityHashCode(o)+", size: "+sizes.get(o);
     }
 
     public HelloWorldFlowView() {
         addClassName("hello-world-flow-view");
         name = new TextField("Your name");
         Button sayHello = new Button("Say hello");
-        Tree<ObjectWrapper> treeGrid = new Tree<>(HelloWorldFlowView::getDescription);
+        Tree<Object> treeGrid = new Tree<>(this::getObjectDescription);
         add(name, sayHello, treeGrid);
         setVerticalComponentAlignment(Alignment.END, name, sayHello);
         sayHello.addClickListener(e -> {
-            Notification.show("Hello " + name.getValue()+"! Session size is: "+sizeOf.deepSizeOf(VaadinSession.getCurrent()));
-            treeGrid.setItems(Collections.singleton(ObjectWrapper.wrap(VaadinSession.getCurrent())), sizeOf::getChildrenOfDesc);
+            Notification.show("Hello " + name.getValue()+"! Session size is: "+sizeOf.deepSizeOf(loggingVisitorListener, VaadinSession.getCurrent()));
+            treeGrid.setItems(Collections.singleton(VaadinSession.getCurrent()), this::getChildrenOf);
         });
     }
 
-    private static String getDescription(Object o){
-        Object obj = o;
-        while (obj instanceof ObjectWrapper){
-            obj = ((ObjectWrapper) o).o;
-        }
-        return obj.getClass().getName()+"@"+System.identityHashCode(obj);
-    }
 }
