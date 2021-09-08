@@ -11,13 +11,10 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.server.VaadinSession;
-
 import org.ehcache.sizeof.SizeOf;
-import org.ehcache.sizeof.VisitorListener;
 
 
 import java.util.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Route(value = "hello-world-flow")
@@ -52,44 +49,22 @@ public class HelloWorldFlowView extends HorizontalLayout {
 //        return o.getClass().getName()+"@"+System.identityHashCode(o);
 //    }
 
-    public static class ObjectWrapper {
 
-        public static ObjectWrapper wrap(Object o){
-            return new ObjectWrapper(o);
-        }
-
-        private final Object o;
-        public ObjectWrapper(Object o){
-            this.o = o;
-        }
-        @Override
-        public int hashCode(){
-            return System.identityHashCode(o);
-        }
-        @Override
-        public boolean equals(Object o){
-            return this.o == o;
-        }
-    }
 
     public HelloWorldFlowView() {
         addClassName("hello-world-flow-view");
         name = new TextField("Your name");
         Button sayHello = new Button("Say hello");
-        Tree<ObjectWrapper> treeGrid = new Tree<>(HelloWorldFlowView::getDescription);
+        Tree<Object> treeGrid = new Tree<>(HelloWorldFlowView::getDescription);
         add(name, sayHello, treeGrid);
         setVerticalComponentAlignment(Alignment.END, name, sayHello);
         sayHello.addClickListener(e -> {
             Notification.show("Hello " + name.getValue()+"! Session size is: "+sizeOf.deepSizeOf(VaadinSession.getCurrent()));
-            treeGrid.setItems(Collections.singleton(ObjectWrapper.wrap(VaadinSession.getCurrent())), sizeOf::getChildrenOfDesc);
+            treeGrid.setItems(Collections.singleton(VaadinSession.getCurrent()), parent -> new LinkedList<>()); // TODO
         });
     }
 
     private static String getDescription(Object o){
-        Object obj = o;
-        while (obj instanceof ObjectWrapper){
-            obj = ((ObjectWrapper) o).o;
-        }
-        return obj.getClass().getName()+"@"+System.identityHashCode(obj);
+        return o.getClass().getName()+"@"+System.identityHashCode(o);
     }
 }
