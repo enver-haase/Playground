@@ -77,7 +77,7 @@
 
     <dependencies>
 
-        <dependency>
+        <!--dependency>
             <groupId>javax.cache</groupId>
             <artifactId>cache-api</artifactId>
             <version>1.1.1</version>
@@ -86,8 +86,13 @@
             <groupId>org.ehcache</groupId>
             <artifactId>ehcache</artifactId>
             <version>3.9.6</version>
-        </dependency>
+        </dependency-->
 
+        <dependency>
+            <groupId>org.ehcache</groupId>
+            <artifactId>sizeof</artifactId>
+            <version>0.4.0</version>
+        </dependency>
 
         <dependency>
             <groupId>com.vaadin</groupId>
