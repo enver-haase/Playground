@@ -11,7 +11,6 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.WrappedSession;
-import org.openjdk.jol.info.GraphLayout;
 
 import java.io.*;
 import java.util.HashSet;
@@ -34,7 +33,7 @@ public class HelloWorldFlowView extends HorizontalLayout {
         add(name, sayHello);
         setVerticalComponentAlignment(Alignment.END, name, sayHello);
         sayHello.addClickListener(e -> {
-            Notification.show("Hello " + name.getValue()+"! Session size is: "+getSessionSize()+" / "+GraphLayout.parseInstance(VaadinSession.getCurrent()).totalSize()+".");
+            Notification.show("Hello " + name.getValue()+"! Session size is: "+getSessionSize()+".");
 
             bytes.add(new byte[10000]);
         });
