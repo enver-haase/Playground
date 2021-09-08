@@ -1,5 +1,5 @@
 declare module '*.css' {
-  import { CSSResultGroup } from 'lit';
-  const content: CSSResultGroup;
+  import { CSSResult } from 'lit-element';
+  const content: CSSResult;
   export default content;
 }
