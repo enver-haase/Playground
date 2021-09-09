@@ -12,9 +12,15 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.server.VaadinSession;
 import org.ehcache.sizeof.SizeOf;
+import org.ehcache.sizeof.VisitorListener;
+//import org.ehcache.sizeof.impl.AgentSizeOf;
+//import org.ehcache.sizeof.impl.PassThroughFilter;
+//import org.ehcache.sizeof.impl.ReflectionSizeOf;
+//import org.ehcache.sizeof.impl.UnsafeSizeOf;
 
 
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Route(value = "hello-world-flow")
@@ -26,9 +32,12 @@ public class HelloWorldFlowView extends HorizontalLayout {
 
     Logger logger = Logger.getLogger(HelloWorldFlowView.class.getName());
 
-    private final SizeOf sizeOf = SizeOf.newInstance(true, false);
+    private final SizeOf sizeOf = SizeOf.newInstance(true, true); // filters can be passed here
+    //private final SizeOf sizeOf = new AgentSizeOf(new PassThroughFilter(),true, true); // filters can be passed here
+    //private final SizeOf sizeOf = new UnsafeSizeOf(new PassThroughFilter(),true, true); // filters can be passed here
+    //private final SizeOf sizeOf = new ReflectionSizeOf(new PassThroughFilter(),true, true); // filters can be passed here
 
-//    private final LoggingVisitorListener loggingVisitorListener = new LoggingVisitorListener();
+    private final LoggingVisitorListener loggingVisitorListener = new LoggingVisitorListener();
 
     private static class Tree<T> extends TreeGrid<T> {
         Tree(ValueProvider<T, ?> valueProvider) {
@@ -37,18 +46,13 @@ public class HelloWorldFlowView extends HorizontalLayout {
         }
     }
 
-//    private class LoggingVisitorListener implements VisitorListener {
-//        long currentSize = 0;
-//        public void visited(Object object, long size) {
-//            currentSize += size;
-//            logger.log(Level.INFO, getDesc(object)+" cumulated size so far, from tree root: "+currentSize);
-//        }
-//    }
-//
-//    private static String getDesc(Object o){
-//        return o.getClass().getName()+"@"+System.identityHashCode(o);
-//    }
-
+    private class LoggingVisitorListener implements VisitorListener {
+        private int depth = 0;
+        public void visited(Object object, long size) {
+            depth++;
+            logger.log(Level.INFO, getDescription(object)+": "+ (sizeOf.deepSizeOf(object)));
+        }
+    }
 
 
     public HelloWorldFlowView() {
@@ -59,8 +63,9 @@ public class HelloWorldFlowView extends HorizontalLayout {
         add(name, sayHello, treeGrid);
         setVerticalComponentAlignment(Alignment.END, name, sayHello);
         sayHello.addClickListener(e -> {
-            Notification.show("Hello " + name.getValue()+"! Session size is: "+sizeOf.deepSizeOf(VaadinSession.getCurrent()));
+            Notification.show("Hello " + name.getValue()+"! Session size is: "+sizeOf.deepSizeOf(loggingVisitorListener, VaadinSession.getCurrent()));
             treeGrid.setItems(Collections.singleton(VaadinSession.getCurrent()), parent -> new LinkedList<>()); // TODO
+            logger.log(Level.SEVERE, "Depth is "+loggingVisitorListener.depth);
         });
     }
 
