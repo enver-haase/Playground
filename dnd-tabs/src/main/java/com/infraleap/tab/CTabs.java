@@ -18,7 +18,6 @@ public class CTabs extends Tabs {
 	private final ArrayList<DomListenerRegistration> dragEventListeners = new ArrayList<>();
 	private int tabTargetId;
 	private int parentId;
-	private CTabs dropFromTab = null;
 	private TabsChangedEvent dragAndDropEvent;
 	private Tab previousSelectedTab = null;
 
@@ -132,19 +131,6 @@ public class CTabs extends Tabs {
 	 * @param dragSource the drag source
 	 * @param dropSource the drop source
 	 */
-	public void addDragSource(CTab dragSource, CTab dropSource) {
-		createTabChangedEvent(dragSource, dropSource);
-		addTabAtIndex(dragAndDropEvent.getDropIndex(), dragSource);
-		dropFromTab.setSelectedTab(dropFromTab.getTabAt(0));
-		fireEvent(dragAndDropEvent);
-		setSelectedTab(dragSource);
-	}
-
-
-	/**
-	 * @param dragSource the drag source
-	 * @param dropSource the drop source
-	 */
 	private void createTabChangedEvent(CTab dragSource, CTab dropSource) {
 		dragAndDropEvent = new TabsChangedEvent(this, true);
 		dragAndDropEvent.setDragIndex(indexOf(dragSource));
@@ -187,21 +173,9 @@ public class CTabs extends Tabs {
 			super(source, fromClient);
 		}
 
-
-		public int getDragIndex() {
-			return dragIndex;
-		}
-
-
 		public void setDragIndex(int dragIndex) {
 			this.dragIndex = dragIndex;
 		}
-
-
-		public int getDropIndex() {
-			return dropIndex;
-		}
-
 
 		public void setDropIndex(int dropIndex) {
 			this.dropIndex = dropIndex;

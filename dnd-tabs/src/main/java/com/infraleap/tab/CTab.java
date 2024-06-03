@@ -114,7 +114,6 @@ public class CTab extends Tab implements DragSource<CTab>, DropTarget<CTab>, Fle
 				}
 
 				if (parentId != lastParentId) {
-					tabs.addDragSource(dragSource, this);
 					tabs.setParentId(this.getParent().get().getElement().getNode().getId());
 					tabs.setTabTargetId(dragSource.getElement().getNode().getId());
 				} else {
