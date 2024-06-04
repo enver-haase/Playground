@@ -27,7 +27,8 @@ public class AboutView extends VerticalLayout {
         CTab[] tabs = new CTab[count];
         for (int i = 0; i < count; i++) {
             tabs[i] = new CTab();
-            tabs[i].add(new Span("Tab " + i));
+            //tabs[i].add(new Span("Tab " + i));
+            tabs[i].setLabel("Tab " + i);
         }
         return tabs;
     }
