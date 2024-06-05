@@ -1,7 +1,7 @@
 package com.infraleap.views.ctabs;
 
-import com.infraleap.tab.CTab;
-import com.infraleap.tab.CTabs;
+import com.infraleap.views.ctabs.tab.CTab;
+import com.infraleap.views.ctabs.tab.CTabs;
 import com.infraleap.views.MainLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;

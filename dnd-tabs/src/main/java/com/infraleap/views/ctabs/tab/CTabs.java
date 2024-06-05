@@ -1,4 +1,4 @@
-package com.infraleap.tab;
+package com.infraleap.views.ctabs.tab;
 
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.tabs.Tab;

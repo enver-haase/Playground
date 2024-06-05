@@ -1,9 +1,9 @@
 package com.infraleap.views.dndtabs;
 
-import com.infraleap.tab.CTab;
-import com.infraleap.tab.CTabs;
 import com.infraleap.views.MainLayout;
+import com.infraleap.views.dndtabs.tab.DNDTab;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
@@ -13,16 +13,14 @@ public class DNDTabsView extends VerticalLayout {
 
     public DNDTabsView() {
 
-        CTabs horizontalDND = new CTabs(getTabs(10));
-        horizontalDND.setDraggable(true);
+        Tabs horizontalDND = new Tabs(getTabs(10));
         add(horizontalDND);
     }
 
-    static CTab[] getTabs(int count) {
-        CTab[] tabs = new CTab[count];
+    static DNDTab[] getTabs(int count) {
+        DNDTab[] tabs = new DNDTab[count];
         for (int i = 0; i < count; i++) {
-            tabs[i] = new CTab();
-            //tabs[i].add(new Span("Tab " + i));
+            tabs[i] = new DNDTab();
             tabs[i].setLabel("Tab " + i);
         }
         return tabs;
