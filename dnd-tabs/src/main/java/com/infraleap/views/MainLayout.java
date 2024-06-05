@@ -1,6 +1,7 @@
 package com.infraleap.views;
 
-import com.infraleap.views.about.AboutView;
+import com.infraleap.views.ctabs.CTabsView;
+import com.infraleap.views.dndtabs.DNDTabsView;
 import com.infraleap.views.helloworld.HelloWorldView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -52,14 +53,15 @@ public class MainLayout extends AppLayout {
         SideNav nav = new SideNav();
 
         nav.addItem(new SideNavItem("Hello World", HelloWorldView.class, LineAwesomeIcon.GLOBE_SOLID.create()));
-        nav.addItem(new SideNavItem("About", AboutView.class, LineAwesomeIcon.FILE.create()));
+        nav.addItem(new SideNavItem("CTabs", CTabsView.class, LineAwesomeIcon.FILE.create()));
+        nav.addItem(new SideNavItem("DNDTabs", DNDTabsView.class, LineAwesomeIcon.FILE.create()));
 
         return nav;
     }
 
     private Footer createFooter() {
         Footer layout = new Footer();
-
+        layout.add(new Span("© 2024 infraLeap"));
         return layout;
     }
 

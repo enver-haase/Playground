@@ -1,22 +1,17 @@
-package com.infraleap.views.about;
+package com.infraleap.views.ctabs;
 
 import com.infraleap.tab.CTab;
 import com.infraleap.tab.CTabs;
 import com.infraleap.views.MainLayout;
-import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 
-@PageTitle("About")
-@Route(value = "about", layout = MainLayout.class)
-public class AboutView extends VerticalLayout {
+@PageTitle("CTabs")
+@Route(value = "ctabs", layout = MainLayout.class)
+public class CTabsView extends VerticalLayout {
 
-    public AboutView() {
+    public CTabsView() {
 
         CTabs horizontalDND = new CTabs(getTabs(10));
         horizontalDND.setDraggable(true);
